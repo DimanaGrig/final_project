@@ -1,19 +1,18 @@
 package com.ittalents.goodreadsprojectv1.model.entity;
 
 import lombok.Data;
-import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.persistence.*;
 
 @Entity
-@Table(name="authors")
+@Table(name = "genres")
 @Data
-public class Author {
+public class Genre {
+
     @Id
     @GeneratedValue(strategy =  GenerationType.IDENTITY)
     private int id;
     @Column
-    private String firstName;
-    @Column
-    private String lastName;
+    private String name;
+
 }
