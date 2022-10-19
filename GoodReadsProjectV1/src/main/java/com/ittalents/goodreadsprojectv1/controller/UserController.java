@@ -26,6 +26,7 @@ public class UserController extends ExceptionController {
     @Autowired
     private ModelMapper modelMapper;
 
+
     @PostMapping("/users")
     public User register(@RequestBody User u) {
 //        String email = u.getEmail();
@@ -40,7 +41,6 @@ public class UserController extends ExceptionController {
         userRepository.save(u);
         return u;
     }
-
 
     @GetMapping("/users")
     public List<UserDTO> getAllUsers() {
@@ -57,7 +57,7 @@ public class UserController extends ExceptionController {
             UserDTO dto = modelMapper.map(u, UserDTO.class);
             return dto;
         } else {
-            throw new NotFoundException();
+            throw new NotFoundException("not found exception");
         }
     }
 

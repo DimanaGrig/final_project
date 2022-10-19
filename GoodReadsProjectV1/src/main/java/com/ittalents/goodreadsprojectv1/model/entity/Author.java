@@ -16,4 +16,10 @@ public class Author {
     private String firstName;
     @Column
     private String lastName;
+    @Column
+    private String picture;
+    @Column
+    private String informationForAuthor;
+    @Column
+    private String authorWebsite;
 }

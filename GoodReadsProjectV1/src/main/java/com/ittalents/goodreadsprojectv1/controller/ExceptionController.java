@@ -14,25 +14,35 @@ import java.time.LocalDateTime;
 @RestController
 public  abstract class ExceptionController {
 
-
     @ExceptionHandler(NotFoundException.class)
     @ResponseStatus(code =HttpStatus.NOT_FOUND)
     public ErrorDTO handlerNotFound(Exception e) {
-        ErrorDTO dto = new ErrorDTO();
-        dto.setMassage("sorry , but not this what you are looking for is not existing " + e.getMessage());
-        dto.setStatus(HttpStatus.NOT_FOUND.value());
-        dto.setTime(LocalDateTime.now());
-        return dto;
+        return buildErrorInfo(e,HttpStatus.NOT_FOUND);
     }
+
     @ExceptionHandler(BadRequestException.class)
     @ResponseStatus(code = HttpStatus.BAD_REQUEST)
     public ErrorDTO handlerBadRequest(Exception e){
-        ErrorDTO dto = new ErrorDTO();
-//        хващаме и двата варианта аз проверка на имейл - не е правилен/има го в базата :)
-        dto.setMassage("sorry , but this email is not suitable for registration" + e.getMessage());
-        dto.setStatus(HttpStatus.BAD_REQUEST.value());
+        return buildErrorInfo(e,HttpStatus.BAD_REQUEST);
+    }
+
+    @ExceptionHandler(NotFoundException.class)
+    @ResponseStatus(code =HttpStatus.UNAUTHORIZED)
+    public ErrorDTO handleUnauthorizedException(Exception e) {
+        return buildErrorInfo(e,HttpStatus.UNAUTHORIZED);
+    }
+
+    @ExceptionHandler(Exception.class)
+    @ResponseStatus(code =HttpStatus.INTERNAL_SERVER_ERROR)
+    public ErrorDTO handleAllOthers(Exception e) {
+        return buildErrorInfo(e,HttpStatus.INTERNAL_SERVER_ERROR);
+    }
+
+    private ErrorDTO buildErrorInfo(Exception e, HttpStatus status){
+        ErrorDTO dto=new ErrorDTO();
+        dto.setStatus(status.value());
+        dto.setMassage(e.getMessage());
         dto.setTime(LocalDateTime.now());
         return dto;
     }
-
 }
