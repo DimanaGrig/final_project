@@ -1,6 +1,5 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
-import com.ittalents.goodreadsprojectv1.model.dto.ErrorDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.UserDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
@@ -9,22 +8,20 @@ import com.ittalents.goodreadsprojectv1.model.repository.UserRepository;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @RestController
-public class UserController extends ExceptionController {
+public class UserController extends AbstractController {
     @Autowired
     private UserRepository userRepository;
     @Autowired
     private ModelMapper modelMapper;
+
 
     @PostMapping("/users")
     public User register(@RequestBody User u) {
@@ -41,7 +38,6 @@ public class UserController extends ExceptionController {
         return u;
     }
 
-
     @GetMapping("/users")
     public List<UserDTO> getAllUsers() {
         List<User> users = userRepository.findAll();
@@ -57,7 +53,7 @@ public class UserController extends ExceptionController {
             UserDTO dto = modelMapper.map(u, UserDTO.class);
             return dto;
         } else {
-            throw new NotFoundException();
+            throw new NotFoundException("not found exception");
         }
     }
 
