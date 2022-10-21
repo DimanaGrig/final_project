@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "books")
@@ -26,4 +28,9 @@ public class Book {
     private Date dateOfPublish;
     @Column
     private String rate;
+    @OneToMany(mappedBy = "book")
+    List<Review> reviewsForBooks;
+    @ManyToMany(mappedBy = "booksAtThisShelf")
+    private Set<Shelf> shelvesOwnThisBook;
+
 }
