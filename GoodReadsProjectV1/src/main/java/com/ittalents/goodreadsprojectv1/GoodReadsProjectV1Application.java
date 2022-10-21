@@ -12,7 +12,6 @@ public class GoodReadsProjectV1Application {
         SpringApplication.run(GoodReadsProjectV1Application.class, args);
     }
 
-
     @Bean
     public ModelMapper modelMapper(){
         return new ModelMapper();
