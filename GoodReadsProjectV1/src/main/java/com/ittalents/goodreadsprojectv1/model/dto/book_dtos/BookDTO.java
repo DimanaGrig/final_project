@@ -12,11 +12,11 @@ public class BookDTO {
     private int rate;
     private String additionalInfo;
 
-
+    //==show book
     //ще съдържа всички полета на книгата, т.е. трябва ли да съществува? от съображения за симетрия
 
 
-    //     Post post = modelMapper.map(postDto, Post.class);
+    //Post post = modelMapper.map(postDto, Post.class);
     //vs
     // UserDTO dto = modelMapper.map(u, UserDTO.class);
     //превръщане от ДТО в ентити и обратното

@@ -10,7 +10,7 @@ import javax.persistence.*;
 public class Quote {
     @Id
     @GeneratedValue(strategy= GenerationType.IDENTITY)
-    private int id;
+    private long id;
     @Column
     private String content;
     @Column
