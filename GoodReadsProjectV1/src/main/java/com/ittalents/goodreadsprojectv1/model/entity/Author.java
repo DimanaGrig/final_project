@@ -23,6 +23,6 @@ public class Author {
     private String informationForAuthor;
     @Column
     private String authorWebsite;
-    @OneToMany(mappedBy = "author") //this is fine
+    @OneToMany(mappedBy = "author")
     private List<Book> allBooks;
 }

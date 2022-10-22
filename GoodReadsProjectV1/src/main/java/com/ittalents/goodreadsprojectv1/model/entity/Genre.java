@@ -19,8 +19,6 @@ public class Genre {
     private String name;
     @ManyToMany(mappedBy = "likedGenres")
     private Set<User> userLikedGenre;
-
-    //todo remove jsonIgnore and create proper DTOs
-    @ManyToMany(mappedBy="bookGenres")          //done
+    @ManyToMany(mappedBy="bookGenres")
     private Set<Book> booksInGenre;
 }

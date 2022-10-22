@@ -17,24 +17,18 @@ public class Book {
     @Column
     private String name;
     @Column
-    private int authorId;
+    private String cover;
     @Column
     private String content;
     @Column
-    private int languageId;
-    @Column
     private String additionalInfo;
-    @Column
-    private Date dateOfPublish;
-    @Column
-    private String rate;
     @OneToMany(mappedBy = "book")
     private List<Review> reviewsForBooks;
     @ManyToMany(mappedBy = "booksAtThisShelf")
     private Set<Shelf> shelvesOwnThisBook;
-    @OneToMany(mappedBy = "book")       //this one is fine, I hope
+    @OneToMany(mappedBy = "book")
     private List<Quote> quotesFromBook;
-    @ManyToMany             //done
+    @ManyToMany
     @JoinTable(
             name ="genres_of_book",
             joinColumns = @JoinColumn(name ="book_id"),

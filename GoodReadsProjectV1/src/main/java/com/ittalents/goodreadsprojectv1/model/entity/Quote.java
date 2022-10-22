@@ -13,9 +13,7 @@ public class Quote {
     private long id;
     @Column
     private String content;
-    @Column
-    private long bookId;
     @ManyToOne
-    @JoinColumn(name = "book_id" /*, referencedColumnName="isbn"*/) //todo - more research on this one
+    @JoinColumn(name = "book_id" /*, referencedColumnName="isbn"*/)      // todo - more research on this one
     private Book book;
 }
