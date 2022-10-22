@@ -4,6 +4,7 @@ import lombok.Data;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import javax.persistence.*;
+import java.util.List;
 
 @Entity
 @Table(name="authors")
@@ -22,4 +23,6 @@ public class Author {
     private String informationForAuthor;
     @Column
     private String authorWebsite;
+    @OneToMany(mappedBy = "author") //this is fine
+    private List<Book> allBooks;
 }

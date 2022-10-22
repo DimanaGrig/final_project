@@ -1,5 +1,6 @@
 package com.ittalents.goodreadsprojectv1.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -18,4 +19,8 @@ public class Genre {
     private String name;
     @ManyToMany(mappedBy = "likedGenres")
     private Set<User> userLikedGenre;
+
+    //todo remove jsonIgnore and create proper DTOs
+    @ManyToMany(mappedBy="bookGenres")          //done
+    private Set<Book> booksInGenre;
 }

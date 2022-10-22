@@ -56,6 +56,4 @@ public class UserController extends AbstractController {
             throw new NotFoundException("not found exception");
         }
     }
-
-
 }

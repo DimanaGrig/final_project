@@ -29,8 +29,18 @@ public class Book {
     @Column
     private String rate;
     @OneToMany(mappedBy = "book")
-    List<Review> reviewsForBooks;
+    private List<Review> reviewsForBooks;
     @ManyToMany(mappedBy = "booksAtThisShelf")
     private Set<Shelf> shelvesOwnThisBook;
-
+    @OneToMany(mappedBy = "book")       //this one is fine, I hope
+    private List<Quote> quotesFromBook;
+    @ManyToMany             //done
+    @JoinTable(
+            name ="genres_of_book",
+            joinColumns = @JoinColumn(name ="book_id"),
+            inverseJoinColumns = @JoinColumn(name = "genre_id"))
+    private Set<Genre> bookGenres;
+    @ManyToOne
+    @JoinColumn(name = "author_id" /*, referencedColumnName="isbn"*/)
+    private Author author;
 }
