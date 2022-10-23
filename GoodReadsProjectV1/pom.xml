@@ -10,9 +10,9 @@
     </parent>
     <groupId>com.ittalents</groupId>
     <artifactId>GoodReadsProjectV1</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>GoodReadsProjectV1</name>
-    <description>GoodReadsProjectV1</description>
+    <version>1</version>
+    <name>spring-data</name>
+    <description>Demo project for Spring Data JPA with ORM Hibernate</description>
     <properties>
         <java.version>11</java.version>
     </properties>

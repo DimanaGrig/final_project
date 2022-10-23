@@ -1,8 +1,8 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
 
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserRequLoginDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserRequRegisterDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.users.UserReqLoginDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.users.UserReqRegisterDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.users.UserRespWithoutPassDTO;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.services.UserService;
@@ -18,13 +18,14 @@ public class UserController extends AbstractController {
     private UserService userService;
 
 
+
     @PostMapping("/users")
-    public UserRespWithoutPassDTO register(@RequestBody UserRequRegisterDTO dto) {
+    public UserRespWithoutPassDTO register(@RequestBody UserReqRegisterDTO dto) {
         return userService.register(dto);
     }
 
     @PostMapping("/auth")
-    public UserRespWithoutPassDTO login(@RequestBody UserRequLoginDTO dto, HttpServletRequest request) {
+    public UserRespWithoutPassDTO login(@RequestBody UserReqLoginDTO dto, HttpServletRequest request) {
         if (getLoggedUserId(request) > 0) {
             throw new BadRequestException("You already have logged!");
         }

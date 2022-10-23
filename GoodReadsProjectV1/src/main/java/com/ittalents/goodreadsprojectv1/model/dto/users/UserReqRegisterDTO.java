@@ -3,7 +3,7 @@ package com.ittalents.goodreadsprojectv1.model.dto.users;
 import lombok.Data;
 
 @Data
-public class UserRequRegisterDTO {
+public class UserReqRegisterDTO {
     private String firstName;
     private String lastName;
     private String email;

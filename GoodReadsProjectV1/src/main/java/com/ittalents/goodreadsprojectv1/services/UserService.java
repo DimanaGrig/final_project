@@ -1,8 +1,8 @@
 package com.ittalents.goodreadsprojectv1.services;
 
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserRequLoginDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserRequRegisterDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.users.UserReqLoginDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.users.UserReqRegisterDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.users.UserRespWithoutPassDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
@@ -21,18 +21,21 @@ import java.util.stream.Collectors;
 
 @Service
 public class UserService extends AbstractService {
+    @Autowired
+    private ShelfService shelfService;
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
 
     @Transactional
-    public UserRespWithoutPassDTO register(UserRequRegisterDTO dto) {
+    public UserRespWithoutPassDTO register(UserReqRegisterDTO dto) {
+        String email = dto.getEmail();
+        String pass = dto.getPass();
         if (!dto.getPass().equals(dto.getConfirmPass())) {
             throw new BadRequestException("Password mismaches!");
         }
-        String email = dto.getEmail();
-        String pass = dto.getPass();
+
         if (validateEmail(email) && checkForEmailInDB(email) && validatePass(pass)) {
             User u = modelMapper.map(dto, User.class);
             u.setPass(bCryptPasswordEncoder.encode(u.getPass()));
@@ -66,7 +69,7 @@ public class UserService extends AbstractService {
     }
 
     private boolean validatePass(String pass) {
-        String regex = "^(?=.*\\\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%])$";
+        String regex ="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(pass);
         if (!matcher.matches()) {
@@ -76,14 +79,14 @@ public class UserService extends AbstractService {
     }
 
 
-    public UserRespWithoutPassDTO login(UserRequLoginDTO dto) {
+    public UserRespWithoutPassDTO login(UserReqLoginDTO dto) {
         String email = dto.getEmail();
         String pass = dto.getPass();
         if (!validateEmail(email) || !validatePass(pass)) {
             throw new BadRequestException("Wrong Credentials");
         }
         Optional<User> user = userRepository.findByEmail(email);
-        if(user.isPresent()){
+        if (user.isPresent()) {
             User u = user.get();
             if (bCryptPasswordEncoder.matches(pass, u.getPass())) {
                 u.setLastEnter(LocalDateTime.now());
@@ -91,8 +94,7 @@ public class UserService extends AbstractService {
                 return modelMapper.map(u, UserRespWithoutPassDTO.class);
             }
             throw new UnauthorizedException("Wrong Credentials!");
-        }
-        else {
+        } else {
             throw new UnauthorizedException("Wrong Credentials!");
         }
     }

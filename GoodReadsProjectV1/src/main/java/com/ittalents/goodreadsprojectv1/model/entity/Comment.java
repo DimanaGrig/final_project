@@ -13,7 +13,7 @@ public class Comment {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
     @ManyToOne
-    @JoinColumn(name = "comment_by")
+    @JoinColumn(name = "commented_by")
     private User user;
     @ManyToOne
     @JoinColumn(name = "review_id")
