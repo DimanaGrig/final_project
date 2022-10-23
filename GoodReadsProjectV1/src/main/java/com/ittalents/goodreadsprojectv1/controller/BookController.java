@@ -14,7 +14,6 @@ public class BookController extends AbstractController {
 
     @Autowired
     private BookService bookService;
-    @Autowired
-    private ModelMapper modelMapper;
+
 
 }

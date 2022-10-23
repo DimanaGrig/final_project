@@ -13,8 +13,7 @@ public abstract class AbstractService {
     protected UserRepository userRepository;
     @Autowired
     protected ShelfRepository shelfRepository;
-    @Autowired
-    protected ShelfService shelfService;
+
     @Autowired
     protected ModelMapper modelMapper;
 

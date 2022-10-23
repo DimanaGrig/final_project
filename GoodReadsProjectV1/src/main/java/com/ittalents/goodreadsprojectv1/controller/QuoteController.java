@@ -12,6 +12,4 @@ public class QuoteController extends AbstractController {
     @Autowired
     private QuoteService quoteService;
 
-    @Autowired
-    private ModelMapper modelMapper;
 }

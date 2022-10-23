@@ -1,10 +1,8 @@
 package com.ittalents.goodreadsprojectv1.model.entity;
 
 import lombok.Data;
-import org.hibernate.annotations.BatchSize;
 
 import javax.persistence.*;
-import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -23,7 +21,6 @@ public class User {
     @Column
     private String email;
     @Column
-    @Size(min = 8, max = 20)
     private String pass;
     @Column
     private String gender;
@@ -31,7 +28,7 @@ public class User {
     private LocalDateTime memberFrom;
     @Column
     private LocalDateTime lastEnter;
-    @Column
+    @Column(name ="addres")
     private String address;
     @Column
     private String website;

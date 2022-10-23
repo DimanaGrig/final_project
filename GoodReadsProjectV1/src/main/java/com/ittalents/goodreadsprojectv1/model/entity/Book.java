@@ -17,26 +17,25 @@ public class Book {
     @Column
     private String name;
     @Column
-    private String cover;
+    private String bookCover;
     @Column
     private String content;
     @Column
     private String additionalInfo;
     @OneToMany(mappedBy = "book")
-    private List<Review> reviewsForBooks;
+    private List<Review> reviewsForBook;
     @ManyToMany(mappedBy = "booksAtThisShelf")
     private Set<Shelf> shelvesOwnThisBook;
     @OneToMany(mappedBy = "book")
     private List<Quote> quotesFromBook;
     @ManyToMany
     @JoinTable(
-            name ="genres_of_book",
+            name ="genres_of_books",
             joinColumns = @JoinColumn(name ="book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private Set<Genre> bookGenres;
     @ManyToOne
-    @JoinColumn(name = "author_id" /*, referencedColumnName="isbn"*/)
+    @JoinColumn(name = "author_id") /*, referencedColumnName="isbn"*/
     private Author author;
-    @Column
-    private String bookCover;
+
 }

@@ -7,8 +7,6 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class ShelfController  extends AbstractController{
 
-    @Autowired
-    private ShelfService shelfService;
 
 
 }

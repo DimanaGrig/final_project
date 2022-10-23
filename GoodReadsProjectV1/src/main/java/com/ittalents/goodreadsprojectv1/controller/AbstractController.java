@@ -2,21 +2,23 @@ package com.ittalents.goodreadsprojectv1.controller;
 
 
 import com.ittalents.goodreadsprojectv1.model.dto.ErrorDTO;
-import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
+import org.modelmapper.ModelMapper;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.time.LocalDateTime;
 
-@RestController
+
 public abstract class AbstractController {
+    @Autowired
+    protected ModelMapper modelMapper;
 
     public static final String LOGGED = "LOGGED";
     public static final String USER_ID = "USER_ID";
@@ -34,7 +36,7 @@ public abstract class AbstractController {
         return buildErrorInfo(e, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(NotFoundException.class)
+    @ExceptionHandler(UnauthorizedException.class)
     @ResponseStatus(code = HttpStatus.UNAUTHORIZED)
     public ErrorDTO handleUnauthorizedException(Exception e) {
         return buildErrorInfo(e, HttpStatus.UNAUTHORIZED);
@@ -58,10 +60,7 @@ public abstract class AbstractController {
     public int getLoggedUserId(HttpServletRequest request) {
         HttpSession session = request.getSession();
         String ip = request.getRemoteAddr();
-        if (session.isNew()) {
-            throw new UnauthorizedException("You have to login!");
-        }
-        if (session.isNew() ||
+          if (session.isNew() ||
                  session.getAttribute(LOGGED) == null ||
                  !(boolean) session.getAttribute(LOGGED) ||
                  !session.getAttribute(REMOTE_IP).equals(ip)) {

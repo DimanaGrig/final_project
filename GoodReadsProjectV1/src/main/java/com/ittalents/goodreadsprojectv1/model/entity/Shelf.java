@@ -16,8 +16,8 @@ public class Shelf {
     private  int id;
     @Column
     private String name;
-    @Column
-    private boolean isDefaut = false;
+    @Column(name = "from_beggining")
+    private boolean fromBeggining = false;
     @ManyToOne
     @JoinColumn(name ="user_id" )
     private User user;

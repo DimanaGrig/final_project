@@ -25,7 +25,7 @@ public class Review {
     private String opinion;
     @ManyToMany(mappedBy = "likedReviews")
     private Set<User> usersLikedThisReview;
-    @OneToMany(mappedBy = "review")
+    @OneToMany(mappedBy = "commentReview")
     List<Comment> commentsForThisReview;
 
 }
