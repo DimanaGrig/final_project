@@ -1,8 +1,11 @@
 package com.ittalents.goodreadsprojectv1.model.dto.book_dtos;
 
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.quote_dtos.QuoteDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.quote_dtos.QuoteWithoutBookDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.*;
 import lombok.Data;
 
@@ -11,12 +14,13 @@ import java.util.Set;
 
 @Data
 public class BookDTO {
+    private long ibsn;
     private String name;
     private String content;
     private String additionalInfo;
-    private QuoteDTO quotes;
-    private GenreDTO genres;
-    private AuthorDTO author;
+    private QuoteWithoutBookDTO quotes;
+    private GenreWithoutBooksDTO genres;
+    private AuthorWithoutBooksDTO author;
     // todo - rewrite the following fields as the proper DTOs
     private List<Review> reviewsForBooks;
     private Set<Shelf> shelvesOwnThisBook;

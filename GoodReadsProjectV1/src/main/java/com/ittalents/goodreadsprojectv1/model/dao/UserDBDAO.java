@@ -15,5 +15,6 @@ public class UserDBDAO implements UserDAO {
     *   jdbcTemplate.execute(-SQL statement-)
     * /.../
     * }
+    * for more inf: https://www.baeldung.com/spring-jdbc-jdbctemplate
     * */
 }
