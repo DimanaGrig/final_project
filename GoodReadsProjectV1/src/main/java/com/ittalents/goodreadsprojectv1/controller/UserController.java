@@ -1,59 +1,50 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
-import com.ittalents.goodreadsprojectv1.model.dto.UserDTO;
-import com.ittalents.goodreadsprojectv1.model.entity.User;
-import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
-import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
-import com.ittalents.goodreadsprojectv1.model.repository.UserRepository;
 
-import org.modelmapper.ModelMapper;
+import com.ittalents.goodreadsprojectv1.model.dto.users.UserRequLoginDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.users.UserRequRegisterDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.users.UserRespWithoutPassDTO;
+import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
+import com.ittalents.goodreadsprojectv1.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 
 @RestController
 public class UserController extends AbstractController {
     @Autowired
-    private UserRepository userRepository;
-    @Autowired
-    private ModelMapper modelMapper;
+    private UserService userService;
 
 
     @PostMapping("/users")
-    public User register(@RequestBody User u) {
-//        String email = u.getEmail();
-//        UserController.checkEmail(email);
-        if (userRepository.findAllByEmail(u.getEmail()).size() > 0) {
-            throw new BadRequestException(" there is already registered user with this email ");
+    public UserRespWithoutPassDTO register(@RequestBody UserRequRegisterDTO dto) {
+        return userService.register(dto);
+    }
+
+    @PostMapping("/auth")
+    public UserRespWithoutPassDTO login(@RequestBody UserRequLoginDTO dto, HttpServletRequest request) {
+        if (getLoggedUserId(request) > 0) {
+            throw new BadRequestException("You already have logged!");
         }
-//        String pass = u.getPass();
-//        UserController.checkPassword(pass);
-        u.setLastEnter(LocalDateTime.now());
-        u.setMemberFrom(LocalDateTime.now());
-        userRepository.save(u);
-        return u;
-    }
-
-    @GetMapping("/users")
-    public List<UserDTO> getAllUsers() {
-        List<User> users = userRepository.findAll();
-        List<UserDTO> usersDTO = users.stream().map(u -> modelMapper.map(u, UserDTO.class)).collect(Collectors.toList());
-        return usersDTO;
-    }
-
-    @GetMapping("/users/{id}")
-    public UserDTO getUserById(@PathVariable long id) {
-        Optional<User> user = userRepository.findById(id);
-        if (user.isPresent()) {
-            User u = user.get();
-            UserDTO dto = modelMapper.map(u, UserDTO.class);
-            return dto;
+        UserRespWithoutPassDTO response = userService.login(dto);
+        if (response != null) {
+            logUser(request, response.getId());
+            return response;
         } else {
-            throw new NotFoundException("not found exception");
+            throw new BadRequestException("Wrong credentials!");
         }
+    }
+
+    @PostMapping("/logout")
+    public void logout(HttpSession session) {
+        session.invalidate();
+    }
+
+    @GetMapping("/users/{uid}")
+    public UserRespWithoutPassDTO getById(@PathVariable int uid) {
+        return userService.getById(uid);
     }
 }
+

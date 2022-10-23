@@ -10,6 +10,7 @@ public class BookWithoutAuthorDTO {
     private String name;
     private String content;
     private String additionalInfo;
+//    spored men tezi trqbwa da  gi nqma tuk ili pone da sa v kolekciya.
     private QuoteWithoutBookDTO quotes;
     private GenreWithoutBooksDTO genres;
 }
