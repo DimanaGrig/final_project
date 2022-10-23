@@ -17,7 +17,7 @@ public class Comment {
     private User user;
     @ManyToOne
     @JoinColumn(name = "review_id")
-    private Review review;
+    private Review commentReview;
     @Column
     private String comment;
     @Column

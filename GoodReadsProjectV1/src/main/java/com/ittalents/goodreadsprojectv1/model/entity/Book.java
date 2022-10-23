@@ -37,4 +37,6 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "author_id" /*, referencedColumnName="isbn"*/)
     private Author author;
+    @Column
+    private String bookCover;
 }
