@@ -5,12 +5,15 @@ import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDT
 import com.ittalents.goodreadsprojectv1.model.dto.quote_dtos.QuoteWithoutBookDTO;
 import lombok.Data;
 
+import java.util.List;
+import java.util.Set;
+
 @Data
 public class BookWithoutGenresDTO {
-    private long ibsn;
+    private long isbn;
     private String name;
     private String content;
     private String additionalInfo;
-    private QuoteWithoutBookDTO quotes;
+    private List<QuoteWithoutBookDTO> quotes;
     private AuthorWithoutBooksDTO author;
 }

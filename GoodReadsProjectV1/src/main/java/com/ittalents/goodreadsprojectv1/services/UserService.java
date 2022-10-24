@@ -33,7 +33,7 @@ public class UserService extends AbstractService {
         String email = dto.getEmail();
         String pass = dto.getPass();
         if (!dto.getPass().equals(dto.getConfirmPass())) {
-            throw new BadRequestException("Password mismaches!");
+            throw new BadRequestException("Password mismatches!");
         }
 
         if (validateEmail(email) && checkForEmailInDB(email) && validatePass(pass)) {

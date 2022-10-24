@@ -11,12 +11,6 @@ public interface BookRepository extends JpaRepository<Book,Long> {
 
     public Optional<Book> findByIsbn(long isbn);
     public List<Book> findByName(String name);
-    public Book existsBookByIsbn(Long isbn);
-
-    //get by title and author(FK)
-    //get by author (FK)
-    //get by language (FK)
-    //get by genre (FK)
-    //get all other editions for same book (diff IBSN)
+    public boolean existsByIsbn(long isbn);
 
 }
