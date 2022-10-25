@@ -7,6 +7,6 @@ public class UserWithoutRelationsDTO {
 
     private int id;
     private String firstName;
-    private String lastNme;
+    private String lastName;
     private String photo;
 }

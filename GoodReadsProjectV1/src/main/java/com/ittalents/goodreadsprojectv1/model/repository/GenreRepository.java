@@ -10,4 +10,6 @@ public interface GenreRepository extends JpaRepository<Genre, Integer> {
 
     public Optional<Genre> findById(int id);
     public Optional<Genre> findByName(String Name);
+
+
 }

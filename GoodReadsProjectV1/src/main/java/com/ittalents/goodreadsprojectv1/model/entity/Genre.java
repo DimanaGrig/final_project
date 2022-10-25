@@ -18,7 +18,7 @@ public class Genre {
     @Column
     private String name;
     @ManyToMany(mappedBy = "likedGenres")
-    private Set<User> userLikedGenre;
+    private List<User> userLikedGenre;
     @ManyToMany(mappedBy="bookGenres")
-    private Set<Book> booksInGenre;
+    private List<Book> booksInGenre;
 }

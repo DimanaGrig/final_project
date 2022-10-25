@@ -7,11 +7,11 @@ import java.util.List;
 
 @Data
 
-public class UsersReviewsDTO {
+public class UserReviewsDTO {
 
     private int id;
     private String firstName;
-    private String lastNme;
+    private String lastName;
     private String photo;
     private List<ReviewWithoutRelationsDTO> writtenReviews;
 }

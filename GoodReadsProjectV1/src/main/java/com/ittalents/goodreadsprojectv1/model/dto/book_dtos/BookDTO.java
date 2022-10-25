@@ -19,8 +19,8 @@ public class BookDTO {
     private String cover;
     private String additionalInfo;
     private List<QuoteWithoutBookDTO> quotes;
-    private Set<GenreWithoutBooksDTO> genres;
+    private List<GenreWithoutBooksDTO> genres;
     private AuthorWithoutBooksDTO author;
     private List<ReviewsCommentsDTO> reviewsForBooks;
-    private Set<ShelfWithoutRelationsDTO> shelvesOwnThisBook;
+    private List<ShelfWithoutRelationsDTO> shelvesOwnThisBook;
 }

@@ -2,12 +2,13 @@ package com.ittalents.goodreadsprojectv1.model.dto.users;
 
 import lombok.Data;
 
-import java.util.Set;
+import java.util.List;
+
 @Data
-public class UsersFollowingDTO {
+public class UserFollowingDTO {
     private int id;
     private String firstName;
-    private String lastNme;
+    private String lastName;
     private String photo;
-    private Set<UserWithoutRelationsDTO> followers;
+    private List<UserWithoutRelationsDTO> following;
 }

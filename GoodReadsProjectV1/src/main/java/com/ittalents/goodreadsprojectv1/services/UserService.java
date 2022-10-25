@@ -1,9 +1,8 @@
 package com.ittalents.goodreadsprojectv1.services;
 
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserReqLoginDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserReqRegisterDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserRespWithoutPassDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.users.*;
+import com.ittalents.goodreadsprojectv1.model.entity.Shelf;
 import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
@@ -14,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -43,7 +43,9 @@ public class UserService extends AbstractService {
             u.setLastEnter(LocalDateTime.now());
             userRepository.save(u);
             shelfService.createBasicShelves(u);
-            return modelMapper.map(u, UserRespWithoutPassDTO.class);
+            UserRespWithoutPassDTO dto1 = modelMapper.map(u, UserRespWithoutPassDTO.class);
+            dto1.setUserShelves(u.getUserShelves().stream().map(sh -> modelMapper.map(sh, ShelfWithoutRelationsDTO.class)).collect(Collectors.toList()));
+            return dto1;
         }
         throw new BadRequestException("Not good Credentials!");
     }
@@ -69,7 +71,7 @@ public class UserService extends AbstractService {
     }
 
     private boolean validatePass(String pass) {
-        String regex ="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$";
+        String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$";
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(pass);
         if (!matcher.matches()) {
@@ -79,7 +81,7 @@ public class UserService extends AbstractService {
     }
 
 
-    public UserRespWithoutPassDTO login(UserReqLoginDTO dto) {
+    public UserWithoutRelationsDTO login(UserReqLoginDTO dto) {
         String email = dto.getEmail();
         String pass = dto.getPass();
         if (!validateEmail(email) || !validatePass(pass)) {
@@ -91,21 +93,42 @@ public class UserService extends AbstractService {
             if (bCryptPasswordEncoder.matches(pass, u.getPass())) {
                 u.setLastEnter(LocalDateTime.now());
                 userRepository.save(u);
-                return modelMapper.map(u, UserRespWithoutPassDTO.class);
+                return modelMapper.map(u, UserWithoutRelationsDTO.class);
             }
-            throw new UnauthorizedException("Wrong Credentials!");
-        } else {
-            throw new UnauthorizedException("Wrong Credentials!");
         }
+        throw new UnauthorizedException("Wrong Credentials!");
     }
+
 
     public UserRespWithoutPassDTO getById(int uid) {
         User u = getUserById(uid);
         UserRespWithoutPassDTO dto = modelMapper.map(u, UserRespWithoutPassDTO.class);
-        dto.setUserShelves(u.getUserShelves().stream().map(sh -> modelMapper.map(sh, ShelfWithoutRelationsDTO.class)).collect(Collectors.toList()));
-//        same for reviews,comments,ect..TODO
         return dto;
     }
 
+    public List<UserWithoutRelationsDTO> findAll() {
+        List<User> users = userRepository.findAll();
+        return users.stream().map(u -> modelMapper.map(u, UserWithoutRelationsDTO.class)).collect(Collectors.toList());
+    }
+
+    public void delete(int id) {
+        userRepository.deleteById(id);
+        System.out.println("the user with id = " + id + " have been deleted!");
+    }
+
+
+    public UserFollowingDTO followUser(int fid, int id) {
+        User following = getUserById(fid);
+        User follower = getUserById(id);
+        if (follower.getFollowing().contains(following)) {
+            follower.getFollowing().remove(following);
+        } else {
+            follower.getFollowing().add(following);
+        }
+        userRepository.save(follower);
+        UserFollowingDTO u = modelMapper.map(follower, UserFollowingDTO.class);
+        u.setFollowing(follower.getFollowing().stream().map(f -> modelMapper.map(f, UserWithoutRelationsDTO.class)).collect(Collectors.toList()));
+        return u;
+    }
 
 }
