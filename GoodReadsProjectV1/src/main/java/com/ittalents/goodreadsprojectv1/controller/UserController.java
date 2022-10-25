@@ -1,9 +1,7 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
 
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserReqLoginDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserReqRegisterDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserRespWithoutPassDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.users.*;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -11,12 +9,12 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.util.List;
 
 @RestController
 public class UserController extends AbstractController {
     @Autowired
     private UserService userService;
-
 
 
     @PostMapping("/users")
@@ -25,11 +23,11 @@ public class UserController extends AbstractController {
     }
 
     @PostMapping("/auth")
-    public UserRespWithoutPassDTO login(@RequestBody UserReqLoginDTO dto, HttpServletRequest request) {
+    public UserWithoutRelationsDTO login(@RequestBody UserReqLoginDTO dto, HttpServletRequest request) {
         if (getLoggedUserId(request) > 0) {
             throw new BadRequestException("You already have logged!");
         }
-        UserRespWithoutPassDTO response = userService.login(dto);
+        UserWithoutRelationsDTO response = userService.login(dto);
         if (response != null) {
             logUser(request, response.getId());
             return response;
@@ -47,5 +45,26 @@ public class UserController extends AbstractController {
     public UserRespWithoutPassDTO getById(@PathVariable int uid) {
         return userService.getById(uid);
     }
+
+    @GetMapping("/users")
+    public List<UserWithoutRelationsDTO> getAllUsers() {
+        return userService.findAll();
+    }
+
+    @DeleteMapping("/users/delete")
+    public void deleteUser(HttpServletRequest request){
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        userService.delete(id);
+    }
+
+    @PostMapping("/users/{fid}/follow")
+    public UserFollowingDTO followUser(@PathVariable int fid, HttpServletRequest request) {
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        return userService.followUser(fid, id);
+    }
+
 }
+
 

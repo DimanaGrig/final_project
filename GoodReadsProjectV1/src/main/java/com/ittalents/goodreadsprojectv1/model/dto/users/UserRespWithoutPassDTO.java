@@ -23,13 +23,13 @@ public class UserRespWithoutPassDTO {
     private LocalDateTime lastEnter;
     private String address;
     private String photo;
-    private Set<GenreWithoutBooksDTO> likedGenres;
+    private List<GenreWithoutBooksDTO> likedGenres;
     private List<ReviewWithoutRelationsDTO> writtenReviews;
-    private Set<ReviewWithoutRelationsDTO> likedReviews;
+    private List<ReviewWithoutRelationsDTO> likedReviews;
     private List<CommentWithoutRelationsDTO> userCommentsForReviews;
     private List<ShelfWithoutRelationsDTO> userShelves;
-    private Set<UserWithoutRelationsDTO> followers;
-    private Set<UserWithoutRelationsDTO> following;
+    private List<UserWithoutRelationsDTO> followers;
+    private List<UserWithoutRelationsDTO> following;
 
 
 }
