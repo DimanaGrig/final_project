@@ -26,5 +26,5 @@ public class Shelf {
             name = "books_at_shelves",
             joinColumns = @JoinColumn(name = "shelf_id"),
             inverseJoinColumns = @JoinColumn(name = "book_id"))
-    private Set<Book> booksAtThisShelf;
+    private List<Book> booksAtThisShelf;
 }

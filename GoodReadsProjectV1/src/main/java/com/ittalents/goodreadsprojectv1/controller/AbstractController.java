@@ -60,19 +60,27 @@ public abstract class AbstractController {
     public int getLoggedUserId(HttpServletRequest request) {
         HttpSession session = request.getSession();
         String ip = request.getRemoteAddr();
-          if (session.isNew() ||
-                 session.getAttribute(LOGGED) == null ||
-                 !(boolean) session.getAttribute(LOGGED) ||
-                 !session.getAttribute(REMOTE_IP).equals(ip)) {
-            throw new UnauthorizedException("You have to login!");
+        if (session.isNew() ||
+                session.getAttribute(LOGGED) == null ||
+                !(boolean) session.getAttribute(LOGGED) ||
+                !session.getAttribute(REMOTE_IP).equals(ip)) {
+            return -1;
         }
         return (int) session.getAttribute(USER_ID);
     }
 
-    public void logUser(HttpServletRequest request, int id){
+    public void logUser(HttpServletRequest request, int id) {
         HttpSession s = request.getSession();
-        s.setAttribute(LOGGED,true);
-        s.setAttribute(USER_ID,id);
-        s.setAttribute(REMOTE_IP,request.getRemoteAddr());
+        s.setAttribute(LOGGED, true);
+        s.setAttribute(USER_ID, id);
+        s.setAttribute(REMOTE_IP, request.getRemoteAddr());
     }
+
+    public boolean checkLog(int id) {
+        if (id < 0) {
+            throw new UnauthorizedException("You have to login!");
+        }
+        return true;
+    }
+
 }

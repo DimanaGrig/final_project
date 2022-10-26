@@ -4,6 +4,7 @@ import com.ittalents.goodreadsprojectv1.model.dto.comments.CommentWithoutRelatio
 import com.ittalents.goodreadsprojectv1.model.dto.users.UserWithoutRelationsDTO;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Set;
 
 @Data
@@ -13,6 +14,6 @@ public class ReviewDTO {
     private int rate;
     private String opinion;
     private UserWithoutRelationsDTO user;
-    private Set<CommentWithoutRelationsDTO> commentsForThisReview;
+    private List<CommentWithoutRelationsDTO> commentsForThisReview;
 
 }

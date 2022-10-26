@@ -4,6 +4,8 @@ import lombok.Data;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -28,7 +30,7 @@ public class User {
     private LocalDateTime memberFrom;
     @Column
     private LocalDateTime lastEnter;
-    @Column(name ="addres")
+    @Column(name = "addres")
     private String address;
     @Column
     private String website;
@@ -41,28 +43,25 @@ public class User {
             name = "users_like_genres",
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id"))
-    private Set<Genre> likedGenres;
+    private List<Genre> likedGenres;
     @OneToMany(mappedBy = "user")
-    private List<Review> writtenReviews;
+    private List<Review> writtenReviews = new ArrayList<>();
     @ManyToMany
     @JoinTable(
             name = "likes_review",
             joinColumns = @JoinColumn(name = "user_id_liked_review"),
             inverseJoinColumns = @JoinColumn(name = "review_id"))
-    private Set<Review> likedReviews;
+    private List<Review> likedReviews;
     @OneToMany(mappedBy = "user")
-    private List<Comment> userCommentsForReviews;
+    private List<Comment> userCommentsForReviews = new ArrayList<>();
     @OneToMany(mappedBy = "user")
-    private List<Shelf> userShelves;
+    private List<Shelf> userShelves = new ArrayList<>();
     @ManyToMany
     @JoinTable(
             name = "list_of_followers",
             joinColumns = @JoinColumn(name = "user_id"),
-            inverseJoinColumns = @JoinColumn(name = "follower_id"))
-    private Set<User> followers;
-    @ManyToMany(mappedBy = "followers")
-    private Set<User> following;
-    @OneToMany(mappedBy = "owner")
-    private List<Book> books;
-
+            inverseJoinColumns = @JoinColumn(name = "follоwer_id"))
+    private List<User> following;
+    @ManyToMany(mappedBy = "following")
+    private List<User> followers;
 }

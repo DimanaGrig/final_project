@@ -25,7 +25,7 @@ public class Book {
     @OneToMany(mappedBy = "book")
     private List<Review> reviewsForBook;
     @ManyToMany(mappedBy = "booksAtThisShelf")
-    private Set<Shelf> shelvesOwnThisBook;
+    private List<Shelf> shelvesOwnThisBook;
     @OneToMany(mappedBy = "book")
     private List<Quote> quotesFromBook;
     @ManyToMany
@@ -33,9 +33,9 @@ public class Book {
             name ="genres_of_books",
             joinColumns = @JoinColumn(name ="book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id"))
-    private Set<Genre> bookGenres;
+    private List<Genre> bookGenres;
     @ManyToOne
-    @JoinColumn(name = "author_id") /*, referencedColumnName="isbn"*/
+    @JoinColumn(name = "author_id") /*, referencedColumnName="isbn"*/ //todo - dont forget to research this
     private Author author;
     @ManyToOne
     @JoinColumn(name = "owner_id")

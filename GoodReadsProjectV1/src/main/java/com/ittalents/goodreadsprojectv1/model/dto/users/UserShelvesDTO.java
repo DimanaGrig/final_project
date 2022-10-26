@@ -4,10 +4,10 @@ import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsD
 
 import java.util.List;
 
-public class UsersShelvesDTO {
+public class UserShelvesDTO {
     private int id;
     private String firstName;
-    private String lastNme;
+    private String lastName;
     private String photo;
     private List<ShelfWithoutRelationsDTO> userShelves;
 }

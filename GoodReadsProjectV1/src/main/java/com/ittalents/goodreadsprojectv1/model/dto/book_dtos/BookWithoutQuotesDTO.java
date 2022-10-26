@@ -17,6 +17,6 @@ public class BookWithoutQuotesDTO {
     private UserWithoutRelationsDTO owner;
     private String content;
     private String additionalInfo;
-    private Set<GenreWithoutBooksDTO> genres;
+    private List<GenreWithoutBooksDTO> genres;
     private AuthorWithoutBooksDTO author;
 }
