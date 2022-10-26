@@ -1,6 +1,7 @@
 package com.ittalents.goodreadsprojectv1.services;
 
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
+import com.ittalents.goodreadsprojectv1.model.entity.Author;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.repository.AuthorRepository;
 import org.modelmapper.ModelMapper;
@@ -19,20 +20,27 @@ public class AuthorService {
     @Autowired
     private ModelMapper modelMapper;
 
-    public AuthorWithoutBooksDTO editAdditionalInf(AuthorWithoutBooksDTO editDTO, String newAdditionalInfo){
+    public AuthorWithoutBooksDTO editProfile(AuthorWithoutBooksDTO editDTO,String newWebsiteLink, String newAdditionalInfo){
+
+        Author a=modelMapper.map(editDTO, Author.class); //todo - наистина нз дали е нужно това допълнително мапване
         if(validateSize(newAdditionalInfo)){
             editDTO.setInformationForAuthor(newAdditionalInfo);
-            return editDTO;
+            a.setInformationForAuthor(newAdditionalInfo);
         }
-        throw new BadRequestException("Too many characters!");
-    }
-    public AuthorWithoutBooksDTO editWebsiteLink (AuthorWithoutBooksDTO editDTO, String newWebsiteLink){
+        else {
+            throw new BadRequestException("Too many characters!");
+        }
         if(validateLink(newWebsiteLink)){
             editDTO.setAuthorWebsite(newWebsiteLink);
-            return editDTO;
+            a.setAuthorWebsite(newWebsiteLink);
         }
-        throw new BadRequestException("Not a valid URL!");
+        else{
+            throw new BadRequestException("Not a valid URL!");
+        }
+        return editDTO;
     }
+
+
     private boolean validateSize(String str) {
         if(str.length()>600){
             return false;

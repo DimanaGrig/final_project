@@ -62,6 +62,7 @@ public class User {
     private Set<User> followers;
     @ManyToMany(mappedBy = "followers")
     private Set<User> following;
-
+    @OneToMany(mappedBy = "owner")
+    private List<Book> books;
 
 }

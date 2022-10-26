@@ -37,5 +37,8 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "author_id") /*, referencedColumnName="isbn"*/
     private Author author;
+    @ManyToOne
+    @JoinColumn(name = "owner_id")
+    private User owner;
 
 }

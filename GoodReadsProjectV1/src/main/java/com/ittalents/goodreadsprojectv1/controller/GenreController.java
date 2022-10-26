@@ -24,6 +24,4 @@ public class GenreController extends  AbstractController{
     public GenreWithoutBooksDTO getById(@PathVariable int id){
         return genreService.getById(id);
     }
-
-
 }
