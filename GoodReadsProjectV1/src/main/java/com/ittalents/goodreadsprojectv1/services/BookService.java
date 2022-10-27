@@ -7,6 +7,7 @@ import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.ShowBookDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.Author;
 import com.ittalents.goodreadsprojectv1.model.entity.Book;
 import com.ittalents.goodreadsprojectv1.model.entity.Genre;
+import com.ittalents.goodreadsprojectv1.model.entity.Shelf;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.repository.AuthorRepository;
@@ -23,7 +24,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
-public class BookService {
+public class BookService extends  AbstractService{
     @Autowired
     private BookRepository bookRepository;
     @Autowired
@@ -160,7 +161,7 @@ public class BookService {
         return dto;
     }
     public List<BookDTO> getByName(String name){
-        List<Book> allBooks=bookRepository.findByName(name);
+        List<Book> allBooks=bookRepository.findByName("%"+name+"%");
         if(allBooks.isEmpty()){
             throw new NotFoundException("Can't find book with this title!");
         }
@@ -168,4 +169,12 @@ public class BookService {
                 .map(b -> modelMapper.map(allBooks, BookDTO.class))
                 .collect(Collectors.toList());
     }
+//
+//    public BookDTO addBookToShelf(int sid,int uid,long isbn){
+//        Book book = getBookByISBN(isbn);
+//        Shelf shelf = getShelfById(sid);
+//        shelf.getBooksAtThisShelf().add(book);
+//        shelf.
+//
+//    }
 }
