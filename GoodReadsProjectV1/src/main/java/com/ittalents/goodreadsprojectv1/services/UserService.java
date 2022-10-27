@@ -131,4 +131,50 @@ public class UserService extends AbstractService {
         return u;
     }
 
+    public UserRespWithoutPassDTO changePass(UserReqChangePassDTO dto, int id) {
+        String newPass = dto.getNewPassword();
+        String confirmNewPass= dto.getConfirmNewPassword();
+        if (newPass.equals(confirmNewPass)) {
+            User user = getUserById(id);
+            if (bCryptPasswordEncoder.matches(dto.getPassword(),user.getPass()) && validatePass(dto.getNewPassword())) {
+                user.setPass(bCryptPasswordEncoder.encode(dto.getNewPassword()));
+                userRepository.save(user);
+                UserRespWithoutPassDTO dto1 = modelMapper.map(user, UserRespWithoutPassDTO.class);
+                return dto1;
+            }
+        }
+        throw new BadRequestException("Not good Credentials!");
+    }
+
+    public UserRespWithoutPassDTO editProfile(UserEditProfile dto, int id) {
+        User user = getUserById(id);
+        String firstName = dto.getFirstName();
+        if (firstName != null) {
+            user.setFirstName(firstName);
+        }
+        String lastName = dto.getLastName();
+        if (lastName != null) {
+            user.setLastName(lastName);
+        }
+        String gender = dto.getGender();
+        if (gender != null) {
+            user.setGender(gender);
+        }
+        String website = dto.getWebsite();
+        if (website != null) {
+            user.setWebsite(website);
+        }
+        String infoForUser = dto.getInfoForUser();
+        if (infoForUser != null) {
+            user.setInfoForUser(infoForUser);
+        }
+        String address = dto.getAddress();
+        if (address != null) {
+            user.setAddress(address);
+        }
+        userRepository.save(user);
+        UserRespWithoutPassDTO dto1 = modelMapper.map(user, UserRespWithoutPassDTO.class);
+        return dto1;
+    }
+
 }

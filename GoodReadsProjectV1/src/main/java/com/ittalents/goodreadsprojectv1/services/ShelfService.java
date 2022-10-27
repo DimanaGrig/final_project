@@ -12,6 +12,7 @@ import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -69,24 +70,23 @@ public class ShelfService extends AbstractService {
         return dto;
     }
 
-//ne chete novo ime ot dto!
+    //ne chete novo ime ot dto!
     public ShelfDTO editShelf(ShelfChangeDTO dto, int uid) {
         Shelf shelf = getShelfById(dto.getId());
-        String name = dto.getNewName();
-        BookDTO bookDTO= dto.getBook();
+        Book  book = getBookByISBN(dto.getIsbn());
         if (shelf.getUser().getId() == uid) {
-            if (bookDTO!= null) {
-                shelf.getBooksAtThisShelf().add(modelMapper.map(dto.getBook(), Book.class));
+            if (book != null) {
+                shelf.getBooksAtThisShelf().add(book);
             }
-            if (!shelf.isFromBeggining()) {
-                if (name!= null) {
-                    shelf.setName(name);
+            if (!shelf.isFromBeggining() && shelf.getName().equals(dto.getName())) {
+                if (dto.getNewName() != null) {
+                    shelf.setName(dto.getNewName());
                 }
             } else {
                 throw new UnauthorizedException("You don't have authorized!");
             }
+            shelfRepository.save(shelf);
         }
-        shelfRepository.save(shelf);
         return modelMapper.map(shelf, ShelfDTO.class);
     }
 }

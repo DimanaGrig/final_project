@@ -1,12 +1,8 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.entity.Genre;
-import com.ittalents.goodreadsprojectv1.model.entity.Shelf;
-import com.ittalents.goodreadsprojectv1.model.entity.User;
+import com.ittalents.goodreadsprojectv1.model.entity.*;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
-import com.ittalents.goodreadsprojectv1.model.repository.GenreRepository;
-import com.ittalents.goodreadsprojectv1.model.repository.ShelfRepository;
-import com.ittalents.goodreadsprojectv1.model.repository.UserRepository;
+import com.ittalents.goodreadsprojectv1.model.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -17,7 +13,10 @@ public abstract class AbstractService {
     protected ShelfRepository shelfRepository;
     @Autowired
     protected GenreRepository genreRepository;
-
+    @Autowired
+    protected BookRepository bookRepository;
+    @Autowired
+    protected ReviewRepository reviewRepository;
     @Autowired
     protected ModelMapper modelMapper;
 
@@ -29,8 +28,24 @@ public abstract class AbstractService {
     protected Genre getGenreById(int id) {
         return genreRepository.findById(id).orElseThrow(() -> new NotFoundException("Genre not found!"));
     }
+
     protected Shelf getShelfById(int id) {
         return shelfRepository.findById(id).orElseThrow(() -> new NotFoundException("Shelf not found!"));
     }
+
+    protected Book getBookByISBN(long isbn) {
+        if (bookRepository.existsByIsbn(isbn)) {
+            return bookRepository.findByIsbn(isbn).orElseThrow(() -> new NotFoundException("Shelf not found!"));
+        }
+    return null;
+    }
+    protected  Shelf getShelfByName(String name){
+        return shelfRepository.getShelfByName(name).orElseThrow(()->new NotFoundException("Shelf not exist!"));
+
+    }
+    protected Review getReviewById(int id){
+        return reviewRepository.getReviewById(id).orElseThrow(()-> new NotFoundException("This review not exist."));
+    }
+
 }
 

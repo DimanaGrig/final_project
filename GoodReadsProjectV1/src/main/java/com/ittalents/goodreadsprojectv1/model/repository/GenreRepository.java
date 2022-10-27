@@ -1,6 +1,6 @@
 package com.ittalents.goodreadsprojectv1.model.repository;
 
-import com.ittalents.goodreadsprojectv1.model.entity.Author;
+
 import com.ittalents.goodreadsprojectv1.model.entity.Genre;
 import org.springframework.data.jpa.repository.JpaRepository;
 
