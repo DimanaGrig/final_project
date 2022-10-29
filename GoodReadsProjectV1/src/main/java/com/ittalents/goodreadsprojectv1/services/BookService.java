@@ -1,6 +1,5 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.dao.BookDAO;
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookWithoutQuotesDTO;
@@ -8,9 +7,9 @@ import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.ShowBookDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.Author;
 import com.ittalents.goodreadsprojectv1.model.entity.Book;
 import com.ittalents.goodreadsprojectv1.model.entity.Genre;
+import com.ittalents.goodreadsprojectv1.model.entity.Shelf;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
-import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import com.ittalents.goodreadsprojectv1.model.repository.AuthorRepository;
 import com.ittalents.goodreadsprojectv1.model.repository.BookRepository;
 import org.modelmapper.ModelMapper;
@@ -18,7 +17,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.net.http.HttpClient;
 import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -26,7 +24,7 @@ import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
-public class BookService {
+public class BookService extends  AbstractService{
     @Autowired
     private BookRepository bookRepository;
     @Autowired
@@ -63,40 +61,33 @@ public class BookService {
         throw new BadRequestException("Book has already been uploaded!");
     }
 
-    //                  ----------EDIT BOOK-------       +new cover!!
-    public ShowBookDTO editBook(BookDTO editDTO,long userId, String newContent, String newAddInfo, List<Genre> newSelectedGenres) {
-       //s id na DTO   wzima[ obekta         i Save w bazata!!!
-
-        Book b = modelMapper.map(editDTO, Book.class);
-        ShowBookDTO result = new ShowBookDTO();
-        if (b.getOwner().getId()==userId) {
-            if (validSize(newContent)) {
-                editDTO.setContent(newContent);
-                b.setContent(editDTO.getContent());
-                result.setContent(editDTO.getContent());
-            } else {
-                throw new BadRequestException("Too many characters!");
-            }
-            if (validSize(newAddInfo)) {
-                editDTO.setAdditionalInfo(newAddInfo);
-                b.setAdditionalInfo(editDTO.getAdditionalInfo());
-                result.setAdditionalInfo(editDTO.getAdditionalInfo());
-            } else {
-                throw new BadRequestException("Too many characters!");
-            }
-            // todo check genres
-            bookRepository.save(b);
+    //                  ----------EDIT BOOK-------
+    public ShowBookDTO editContent(BookDTO editDTO, String newContent){
+        if(validSize(newContent)){
+            editDTO.setContent(newContent); // todo - да го мапна и запазя? тогава в базата няма ли да са 2 книги?
+            ShowBookDTO result=new ShowBookDTO();
+            result.setContent(editDTO.getContent());
             return result;
         }
-        else{
-            throw new UnauthorizedException("You can't edit this book!");
+        throw new BadRequestException("Too many characters!");
+    }
+    public ShowBookDTO editAdditionalInfo(BookDTO editDTO, String newAdditionalInfo){
+        if(validSize(newAdditionalInfo)){
+            editDTO.setContent(newAdditionalInfo);
+            ShowBookDTO result=new ShowBookDTO();
+            result.setAdditionalInfo(editDTO.getAdditionalInfo());
+            return result;
         }
+        throw new BadRequestException("Too many characters!");
     }
-    public void deleteBook(Book book){
-
-
-
+    public BookWithoutQuotesDTO selectGenres(BookDTO editDTO, Set<Genre> selectedGenres){
+        // todo
+        BookWithoutQuotesDTO result=new BookWithoutQuotesDTO();
+        ////////////////////////////////
+        return result;
     }
+
+
 //                              ----------VALIDATION METHODS-----------
     public boolean validateISBN(long isbn){
         String strNumber=String.valueOf(isbn);
@@ -136,7 +127,7 @@ public class BookService {
     public boolean validateNoSpecialChars(String string){
         Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
         Matcher m = p.matcher(string);
-        boolean b = m.find();
+        boolean b = m.find(); //it has special chars
         if(b){
             return false;
         }
@@ -149,11 +140,18 @@ public class BookService {
         return false;
     }
 
-    public boolean validSize(String str) {
-        if (str.length() > 600) {
+    public boolean validSize(String str){
+        if(str.length()>600){
             return false;
         }
         return true;
+    }
+    public List<BookDTO> getAllBooks(){
+        List<Book> books=bookRepository.findAll();
+        List<BookDTO> allBooksDTO = books.stream().
+                map(b -> modelMapper.map(b, BookDTO.class)).
+                collect(Collectors.toList());
+        return allBooksDTO;
     }
 
     public BookDTO getByIsbn(long isbn){
@@ -163,7 +161,7 @@ public class BookService {
         return dto;
     }
     public List<BookDTO> getByName(String name){
-        List<Book> allBooks=bookRepository.findAllByName(name);
+        List<Book> allBooks=bookRepository.findByName("%"+name+"%");
         if(allBooks.isEmpty()){
             throw new NotFoundException("Can't find book with this title!");
         }
@@ -171,4 +169,12 @@ public class BookService {
                 .map(b -> modelMapper.map(allBooks, BookDTO.class))
                 .collect(Collectors.toList());
     }
+//
+//    public BookDTO addBookToShelf(int sid,int uid,long isbn){
+//        Book book = getBookByISBN(isbn);
+//        Shelf shelf = getShelfById(sid);
+//        shelf.getBooksAtThisShelf().add(book);
+//        shelf.
+//
+//    }
 }

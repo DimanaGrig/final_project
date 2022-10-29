@@ -12,7 +12,7 @@ import java.util.Set;
 @Data
 public class Book {
     @Id
-    @GeneratedValue(strategy =  GenerationType.IDENTITY)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long isbn;
     @Column
     private String name;
@@ -26,12 +26,10 @@ public class Book {
     private List<Review> reviewsForBook;
     @ManyToMany(mappedBy = "booksAtThisShelf")
     private List<Shelf> shelvesOwnThisBook;
-    @OneToMany(mappedBy = "book")
-    private List<Quote> quotesFromBook;
     @ManyToMany
     @JoinTable(
-            name ="genres_of_books",
-            joinColumns = @JoinColumn(name ="book_id"),
+            name = "genres_of_books",
+            joinColumns = @JoinColumn(name = "book_id"),
             inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private List<Genre> bookGenres;
     @ManyToOne

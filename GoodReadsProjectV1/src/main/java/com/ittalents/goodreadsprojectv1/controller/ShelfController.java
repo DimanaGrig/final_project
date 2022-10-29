@@ -35,12 +35,13 @@ public class ShelfController extends AbstractController {
     public ShelfDTO getById(@PathVariable int sid) {
         return shelfService.geById(sid);
     }
-@PostMapping("/shelves/{sid}/edit")
-    public ShelfDTO editShlef(@RequestBody ShelfChangeDTO dto, HttpServletRequest request){
-    int id = getLoggedUserId(request);
-    checkLog(id);
-    return shelfService.editShelf(dto,id);
-}
+
+    @PutMapping("/shelves/edit")
+    public ShelfDTO editShelf(@RequestBody ShelfChangeDTO dto, HttpServletRequest request) {
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        return shelfService.editShelf(dto, id);
+    }
 
 }
 

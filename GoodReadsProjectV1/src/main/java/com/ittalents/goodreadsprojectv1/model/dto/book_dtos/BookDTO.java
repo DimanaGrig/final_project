@@ -5,7 +5,6 @@ import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDT
 import com.ittalents.goodreadsprojectv1.model.dto.quote_dtos.QuoteWithoutBookDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewsCommentsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.*;
 import lombok.Data;
 
@@ -19,7 +18,6 @@ public class BookDTO {
     private String content;
     private String cover;
     private String additionalInfo;
-    private UserWithoutRelationsDTO owner;
     private List<QuoteWithoutBookDTO> quotes;
     private List<GenreWithoutBooksDTO> genres;
     private AuthorWithoutBooksDTO author;
