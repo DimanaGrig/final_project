@@ -21,4 +21,9 @@ public class Genre {
     private List<User> userLikedGenre;
     @ManyToMany(mappedBy="bookGenres")
     private List<Book> booksInGenre;
+    public Genre(int id, String name) {
+        this.id = id;
+        this.name = name;
+    }
+    public Genre() {}
 }

@@ -64,6 +64,4 @@ public class User {
     private List<User> following;
     @ManyToMany(mappedBy = "following")
     private List<User> followers;
-
-
 }

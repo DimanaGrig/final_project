@@ -1,10 +1,14 @@
 package com.ittalents.goodreadsprojectv1.services;
 
 import com.ittalents.goodreadsprojectv1.model.entity.*;
+import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public abstract class AbstractService {
     @Autowired
@@ -18,9 +22,14 @@ public abstract class AbstractService {
     @Autowired
     protected ReviewRepository reviewRepository;
     @Autowired
+    @Autowired
     protected CommentRepository commentRepository;
+     @Autowired
+    protected AuthorRepository authorRepository;
     @Autowired
     protected ModelMapper modelMapper;
+
+    public static final double ADMIN_ID = 1;   //todo - questions on that
 
 
     protected User getUserById(int uid) {
@@ -48,7 +57,23 @@ public abstract class AbstractService {
     protected Review getReviewById(int id){
         return reviewRepository.getReviewById(id).orElseThrow(()-> new NotFoundException("This review not exist."));
     }
+    protected boolean existByFirstAndLastName(String firstName, String lastName){
+        return authorRepository.existsByFirstNameAndLastName(firstName, lastName);
+    }
 
+    protected void saveAuthor(Author a){         //todo tova ok li e
+        authorRepository.save(a);
+    }
+    protected Author findAuthorById(int aid){
+        return authorRepository.findAuthorById(aid).orElseThrow(()->new BadRequestException("Author not found!"));
+    }
+    protected boolean existsAuthorById(int aid){
+        return authorRepository.existsAuthorById(aid);
+    }
+    protected Author getAuthorById(int aid){
+        return authorRepository.findAuthorById(aid).orElseThrow(()->new NotFoundException("Author not found!"));
+    }
+    
     protected Comment getCommentById(int id){
         return commentRepository.getCommentById(id).orElseThrow(()-> new NotFoundException("This comment doesn't exist."));
     }
@@ -57,6 +82,31 @@ public abstract class AbstractService {
         return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found!"));
     }
 
+    protected  boolean validateName(String name) {
+        return (validateLength(name.length()) && validateNoSpecialChars(name));
+    }
 
+    protected  boolean validateNoSpecialChars(String string){
+        Pattern p = Pattern.compile("[^a-z0-9 ]", Pattern.CASE_INSENSITIVE);
+        Matcher m = p.matcher(string);
+        boolean b = m.find();
+        if(b){
+            return false;
+        }
+        return true;
+    }
+    protected  boolean validateLength(int length){
+        if(length<=30){
+            return true;
+        }
+        return false;
+    }
+
+    protected boolean validateSize(String str){
+        if(str.length()>600){
+            return false;
+        }
+        return true;
+    }
 }
 

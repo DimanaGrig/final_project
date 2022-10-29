@@ -12,7 +12,7 @@ import java.util.Set;
 @Data
 public class Book {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long isbn;
     @Column
     private String name;
@@ -33,7 +33,7 @@ public class Book {
             inverseJoinColumns = @JoinColumn(name = "genre_id"))
     private List<Genre> bookGenres;
     @ManyToOne
-    @JoinColumn(name = "author_id") /*, referencedColumnName="isbn"*/
+    @JoinColumn(name = "author_id") /*, referencedColumnName="isbn"*/ //todo - dont forget to research this
     private Author author;
 
 }

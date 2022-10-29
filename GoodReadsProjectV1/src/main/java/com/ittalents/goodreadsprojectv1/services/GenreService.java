@@ -30,7 +30,7 @@ public class GenreService extends AbstractService {
 
     public GenreWithoutBooksDTO getById(int id) {
         Genre genre = genreRepository.findById(id).orElseThrow(() -> new NotFoundException("Genre not found!"));
-        GenreWithoutBooksDTO dto = modelMapper.map(genre, GenreWithoutBooksDTO.class); // todo should I save here
+        GenreWithoutBooksDTO dto = modelMapper.map(genre, GenreWithoutBooksDTO.class);
         return dto;
     }
 

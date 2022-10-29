@@ -18,7 +18,9 @@ public class GenreController extends AbstractController {
     private GenreService genreService;
 
     @GetMapping("/genres")
-    public List<GenreWithoutBooksDTO> getAllGenres() {
+    public List<GenreWithoutBooksDTO> getAllGenres(HttpServletRequest request) {
+        int id = getLoggedUserId(request);
+        checkLog(id);
         List<GenreWithoutBooksDTO> allGenresDTO = genreService.getAllGenres();
         return allGenresDTO;
     }
@@ -27,14 +29,10 @@ public class GenreController extends AbstractController {
     public GenreWithoutBooksDTO getById(@PathVariable int id) {
         return genreService.getById(id);
     }
-
     @PostMapping("/genres/{gid}/like")
     public GenreUsersDTO like(@PathVariable int gid, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);
         return genreService.like(gid, id);
-
     }
-
-
 }

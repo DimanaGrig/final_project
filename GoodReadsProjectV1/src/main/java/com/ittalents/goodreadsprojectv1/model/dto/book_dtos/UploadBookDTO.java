@@ -2,19 +2,18 @@ package com.ittalents.goodreadsprojectv1.model.dto.book_dtos;
 
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
-
 import lombok.Data;
 
 import java.util.List;
-import java.util.Set;
 
 @Data
-public class BookWithoutQuotesDTO {
+public class UploadBookDTO {
     private long isbn;
     private String name;
-    private String cover;
     private String content;
+    private int authorId;
+    private String cover;
+    private int[] genres;
     private String additionalInfo;
-    private List<GenreWithoutBooksDTO> genres;
-    private AuthorWithoutBooksDTO author;
+    // private List<GenreWithoutBooksDTO> genres;
 }

@@ -4,11 +4,11 @@ import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooks
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewsCommentsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
-
+import com.ittalents.goodreadsprojectv1.model.entity.*;
 import lombok.Data;
 
 import java.util.List;
-
+import java.util.Set;
 
 @Data
 public class BookDTO {
