@@ -1,11 +1,7 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreUsersDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserWithoutRelationsDTO;
-import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
-import com.ittalents.goodreadsprojectv1.services.BookService;
 import com.ittalents.goodreadsprojectv1.services.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;

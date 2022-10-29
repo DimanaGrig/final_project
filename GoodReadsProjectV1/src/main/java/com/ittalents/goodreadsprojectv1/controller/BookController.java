@@ -3,7 +3,6 @@ package com.ittalents.goodreadsprojectv1.controller;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookWithoutQuotesDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.ShowBookDTO;
-import com.ittalents.goodreadsprojectv1.model.entity.Book;
 import com.ittalents.goodreadsprojectv1.model.entity.Genre;
 import com.ittalents.goodreadsprojectv1.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;

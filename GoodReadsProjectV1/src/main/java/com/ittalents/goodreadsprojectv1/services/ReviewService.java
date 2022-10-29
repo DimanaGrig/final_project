@@ -1,18 +1,14 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
+
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.comments.CommentWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewChangeDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewReqCreateDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfChangeDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfReqCreateDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserReqRegisterDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserRespWithoutPassDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.users.UserWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.Book;
 import com.ittalents.goodreadsprojectv1.model.entity.Review;
@@ -20,16 +16,11 @@ import com.ittalents.goodreadsprojectv1.model.entity.Shelf;
 import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
-import com.ittalents.goodreadsprojectv1.model.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 
-import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
+
 import java.util.stream.Collectors;
 
 @Service

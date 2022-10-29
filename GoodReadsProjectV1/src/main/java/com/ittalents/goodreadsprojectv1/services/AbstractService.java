@@ -18,6 +18,8 @@ public abstract class AbstractService {
     @Autowired
     protected ReviewRepository reviewRepository;
     @Autowired
+    protected CommentRepository commentRepository;
+    @Autowired
     protected ModelMapper modelMapper;
 
 
@@ -46,6 +48,15 @@ public abstract class AbstractService {
     protected Review getReviewById(int id){
         return reviewRepository.getReviewById(id).orElseThrow(()-> new NotFoundException("This review not exist."));
     }
+
+    protected Comment getCommentById(int id){
+        return commentRepository.getCommentById(id).orElseThrow(()-> new NotFoundException("This comment doesn't exist."));
+    }
+
+    protected  User getUserByEmail(String email){
+        return userRepository.findByEmail(email).orElseThrow(() -> new NotFoundException("User not found!"));
+    }
+
 
 }
 

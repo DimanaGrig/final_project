@@ -2,7 +2,6 @@ package com.ittalents.goodreadsprojectv1.services;
 
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.users.*;
-import com.ittalents.goodreadsprojectv1.model.entity.Shelf;
 import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
@@ -27,8 +26,7 @@ public class UserService extends AbstractService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-
-    @Transactional
+     @Transactional
     public UserRespWithoutPassDTO register(UserReqRegisterDTO dto) {
         String email = dto.getEmail();
         String pass = dto.getPass();
@@ -111,6 +109,7 @@ public class UserService extends AbstractService {
         return users.stream().map(u -> modelMapper.map(u, UserWithoutRelationsDTO.class)).collect(Collectors.toList());
     }
 
+
     public void delete(int id) {
         userRepository.deleteById(id);
         System.out.println("the user with id = " + id + " have been deleted!");
@@ -177,4 +176,11 @@ public class UserService extends AbstractService {
         return dto1;
     }
 
+    public List<UserRespWithoutPassDTO> findAllUserByEmail(String email){
+        if (!validateEmail(email)) {
+            throw new BadRequestException("Wrong Credentials");
+        }
+        List<User> users = userRepository.findAllByEmail(email);
+        return users.stream().map(user -> modelMapper.map(user, UserRespWithoutPassDTO.class)).collect(Collectors.toList());
+    }
 }
