@@ -2,10 +2,12 @@ package com.ittalents.goodreadsprojectv1.controller;
 
 
 import com.ittalents.goodreadsprojectv1.model.dto.users.*;
+import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import com.ittalents.goodreadsprojectv1.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -48,8 +50,9 @@ public class UserController extends AbstractController {
 
     @GetMapping("/users")
     public List<UserWithoutRelationsDTO> getAllUsers() {
-        return userService.findAll();
+                return userService.findAll();
     }
+
 
     @DeleteMapping("/users/delete")
     public void deleteUser(HttpServletRequest request) {
@@ -85,6 +88,10 @@ public class UserController extends AbstractController {
         return userService.editProfile(dto, id);
     }
 
+    @GetMapping("users/{email}/find")
+    public List<UserRespWithoutPassDTO> getAllUserByEmail(@PathVariable String email) {
+        return userService.findAllUserByEmail(email);
+    }
 }
 
 
