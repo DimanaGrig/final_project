@@ -9,9 +9,9 @@ import java.util.Optional;
 public interface BookRepository extends JpaRepository<Book,Long> {
 
     public Optional<Book> findByIsbn(long isbn);
-    public List<Book> findByName(String name);
     public List<Book> findByAuthorId(int aid);
     public boolean existsByIsbn(long isbn);
+    public void deleteByIsbn(long isbn);
 
 
 

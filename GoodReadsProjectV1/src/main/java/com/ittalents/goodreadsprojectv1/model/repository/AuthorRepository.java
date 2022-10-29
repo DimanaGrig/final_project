@@ -9,9 +9,8 @@ import java.util.Optional;
 public interface AuthorRepository extends JpaRepository<Author, Integer> {
 
     public Optional<Author> findAuthorById(int aid);
-    public List<Author> findAllByFirstName(String firstName);
-    public List<Author> findAllByLastName(String lastName);
-    public List<Author> findAllByFirstNameAndLastName(String firstName, String lastName);
     public  boolean existsByFirstNameAndLastName(String firstName, String lastName);
+    public boolean existsAuthorById(int aid);
+    public void deleteById(int aid);
 
 }

@@ -12,7 +12,7 @@ import java.util.Set;
 @Data
 public class Book {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long isbn;
     @Column
     private String name;
@@ -35,8 +35,5 @@ public class Book {
     @ManyToOne
     @JoinColumn(name = "author_id") /*, referencedColumnName="isbn"*/ //todo - dont forget to research this
     private Author author;
-    @ManyToOne
-    @JoinColumn(name = "owner_id")
-    private User owner;
 
 }
