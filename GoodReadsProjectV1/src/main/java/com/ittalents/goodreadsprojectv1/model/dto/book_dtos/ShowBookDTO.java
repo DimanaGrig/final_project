@@ -13,7 +13,7 @@ public class ShowBookDTO {
     private String name;
     private UserWithoutRelationsDTO owner;
     private String content;
-    private String cover;
+    private String bookCover;
     private String additionalInfo;
     private AuthorWithNameDTO author;
     private Set<GenreWithoutBooksDTO> genres;

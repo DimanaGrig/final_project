@@ -52,7 +52,5 @@ public class GenreService extends AbstractService {
         response.setUserLikedGenre(genre.getUserLikedGenre().stream().map(u -> modelMapper.map(u, UserWithoutRelationsDTO.class)).collect(Collectors.toList()));
         return response;
     }
-
-
 }
 

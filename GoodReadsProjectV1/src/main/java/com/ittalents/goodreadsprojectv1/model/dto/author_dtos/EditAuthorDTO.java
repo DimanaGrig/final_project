@@ -8,7 +8,6 @@ import java.util.List;
 @Data
 public class EditAuthorDTO {
    // private int id;
-    private String picture;
     private String informationForAuthor;
     private String authorWebsite;
 }

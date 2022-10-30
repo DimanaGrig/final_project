@@ -1,14 +1,14 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.EditBookDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.ShowBookDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.UploadBookDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.UploadPictureDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.*;
 import com.ittalents.goodreadsprojectv1.model.entity.Genre;
 import com.ittalents.goodreadsprojectv1.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.net.http.HttpRequest;
@@ -20,14 +20,14 @@ public class BookController extends AbstractController {
     @Autowired
     private BookService bookService;
 
-    @PostMapping("/books/upload")
+    @PostMapping("/books")
     public ShowBookDTO uploadBook(@RequestBody UploadBookDTO uploadDto, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);
         return bookService.upload(uploadDto, id);
     }
 
-    @PutMapping("/books/{isbn}/edit")
+    @PutMapping("/books/{isbn}")
     public ShowBookDTO editBook(@RequestBody EditBookDTO editDTO, HttpServletRequest request, @PathVariable long isbn){
         int id = getLoggedUserId(request);
         checkLog(id);
@@ -41,10 +41,18 @@ public class BookController extends AbstractController {
         return bookService.getByIsbn(isbn);
     }
     @Transactional
-    @DeleteMapping("/books/{isbn}/delete")
+    @DeleteMapping("/books/{isbn}")
     public void deleteBook(HttpServletRequest request, @PathVariable long isbn) {
         int id = getLoggedUserId(request);
         checkLog(id);
         bookService.deleteBook(isbn, id);
+    }
+
+    @PostMapping("/books/{isbn}/cover")
+    public ShowBookDTO uploadPicture(@RequestParam MultipartFile fl,
+                                     @PathVariable long isbn, HttpServletRequest request){
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        return bookService.uploadCover(fl, isbn, id);
     }
 }

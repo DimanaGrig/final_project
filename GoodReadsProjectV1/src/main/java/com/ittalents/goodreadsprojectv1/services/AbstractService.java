@@ -91,11 +91,19 @@ public abstract class AbstractService {
         return false;
     }
 
-    protected boolean validateSize(String str){
-        if(str.length()>600){
+    protected boolean validateSize(String str) {
+        if (str == null) {
+            return true;
+        }
+        if (str.length() > 600) {
             return false;
         }
-        return true;
-    }
+            return true;
+        }
+
+
+//    protected boolean validatePic(String picture){
+//
+//    }
 }
 

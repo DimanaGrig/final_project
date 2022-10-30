@@ -12,7 +12,6 @@ public class UploadBookDTO {
     private String name;
     private String content;
     private int authorId;
-    private String cover;
     private int[] genres;
     private String additionalInfo;
     // private List<GenreWithoutBooksDTO> genres;

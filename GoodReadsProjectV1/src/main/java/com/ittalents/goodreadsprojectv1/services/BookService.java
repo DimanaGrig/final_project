@@ -1,19 +1,24 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.EditBookDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.ShowBookDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.UploadBookDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.UploadPictureDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.*;
+import com.ittalents.goodreadsprojectv1.model.entity.Author;
 import com.ittalents.goodreadsprojectv1.model.entity.Book;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import com.ittalents.goodreadsprojectv1.model.repository.BookRepository;
+import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.transaction.Transactional;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -33,10 +38,12 @@ public class BookService extends  AbstractService {
                         if (!validateName(uploadDto.getName())) {
                             throw new BadRequestException("Invalid title!");
                         }
-                        if ((!validateSize(uploadDto.getAdditionalInfo()) && (uploadDto.getAdditionalInfo()!=null))) {
+                        if ((!validateSize(uploadDto.getAdditionalInfo())
+                                /*&& (uploadDto.getAdditionalInfo()!=null)*/)) {
                             throw new BadRequestException("Too many characters!");
                         }
-                        if ((!validateSize(uploadDto.getContent()) &&  (uploadDto.getContent()!=null))) {
+                        if ((!validateSize(uploadDto.getContent())
+                        /*&&  (uploadDto.getContent()!=null)*/)) {
                             throw new BadRequestException("Too many characters!");
                         }
                         Book book = modelMapper.map(uploadDto, Book.class);
@@ -63,16 +70,17 @@ public class BookService extends  AbstractService {
                 if (validateSize(dto.getAdditionalInfo())) {
                     book.setAdditionalInfo(dto.getAdditionalInfo());
                 } else {
-                    throw new BadRequestException("Too many characters!");
+                    throw new BadRequestException("Too many characters in additional information!");
                 }
                 if (validateSize(dto.getContent())) {
                     book.setContent(dto.getContent());
                 } else {
-                    throw new BadRequestException("Too many characters!");
+                    throw new BadRequestException("Too many characters in content!");
                 }
                 //  if () //genres
-                //if ()//cover
+
                 bookRepository.save(book);
+                return modelMapper.map(book, ShowBookDTO.class);
             }
             throw new NotFoundException("Book does not exist!");
         }
@@ -86,7 +94,29 @@ public class BookService extends  AbstractService {
             System.out.println("Book with isbn = " + isbn + " have been deleted!");
             return;
         }
-        throw new UnauthorizedException("Can't delete books!");
+        throw new UnauthorizedException("Yo can't delete books!");
+    }
+
+    //                        ----------Cover------------
+    public ShowBookDTO uploadCover(MultipartFile fl, long isbn, int id){
+        if(id==ADMIN_ID){
+            Book b=getBookByISBN(isbn);  //todo delete DTOs for pic upload
+            String ext= FilenameUtils.getExtension(fl.getOriginalFilename());
+            String name="uploads"+ File.separator+System.nanoTime()+File.separator+"."+ext;
+            File f=new File(name);
+            if(!f.exists()){
+                try {
+                    Files.copy(fl.getInputStream(), f.toPath());
+                } catch (IOException e) {
+                    throw new BadRequestException(e.getMessage());
+                }
+                b.setBookCover(name);
+                bookRepository.save(b);
+                return modelMapper.map(b, ShowBookDTO.class);
+            }
+            throw new BadRequestException("File exists!");
+        }
+        throw new UnauthorizedException("You can't upload pictures!");
     }
 
     //                              ----------VALIDATION METHODS-----------
@@ -108,15 +138,6 @@ public class BookService extends  AbstractService {
             return true;
         }
         return false;
-    }
-
-
-    public List<BookDTO> getAllBooks() {
-        List<Book> books = bookRepository.findAll();
-        List<BookDTO> allBooksDTO = books.stream().
-                map(b -> modelMapper.map(b, BookDTO.class)).
-                collect(Collectors.toList());
-        return allBooksDTO;
     }
 
     public ShowBookDTO getByIsbn(long isbn) {
