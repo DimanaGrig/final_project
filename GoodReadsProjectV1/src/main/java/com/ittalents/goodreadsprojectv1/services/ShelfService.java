@@ -1,6 +1,5 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfChangeDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfDTO;
@@ -12,7 +11,6 @@ import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
 import java.util.stream.Collectors;
 
 @Service
@@ -70,7 +68,6 @@ public class ShelfService extends AbstractService {
         return dto;
     }
 
-    //ne chete novo ime ot dto!
     public ShelfDTO editShelf(ShelfChangeDTO dto, int uid) {
         Shelf shelf = getShelfById(dto.getId());
         Book  book = getBookByISBN(dto.getIsbn());
