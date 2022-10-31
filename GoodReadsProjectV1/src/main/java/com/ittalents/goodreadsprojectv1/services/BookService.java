@@ -1,10 +1,9 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.UploadPictureDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.*;
-import com.ittalents.goodreadsprojectv1.model.entity.Author;
+import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.Book;
+import com.ittalents.goodreadsprojectv1.model.entity.Genre;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
@@ -19,7 +18,9 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -38,18 +39,21 @@ public class BookService extends  AbstractService {
                         if (!validateName(uploadDto.getName())) {
                             throw new BadRequestException("Invalid title!");
                         }
-                        if ((!validateSize(uploadDto.getAdditionalInfo())
-                                /*&& (uploadDto.getAdditionalInfo()!=null)*/)) {
+                        if ((!validateSize(uploadDto.getAdditionalInfo()))) {
                             throw new BadRequestException("Too many characters!");
                         }
-                        if ((!validateSize(uploadDto.getContent())
-                        /*&&  (uploadDto.getContent()!=null)*/)) {
+                        if ((!validateSize(uploadDto.getContent()))) {
                             throw new BadRequestException("Too many characters!");
+                        }
+                        if(!validateGenres(uploadDto.getGenres())){
+                            throw new BadRequestException("Invalid input for genres");
                         }
                         Book book = modelMapper.map(uploadDto, Book.class);
                         book.setAuthor(getAuthorById(uploadDto.getAuthorId()));
+                        book.setBookGenres(createListForGenres(uploadDto.getGenres()));
                         bookRepository.save(book);
                         ShowBookDTO result = modelMapper.map(book, ShowBookDTO.class);
+                        result.setGenres(createListForGenreDTO(uploadDto.getGenres()));
                         return result;
                     }
                     throw new BadRequestException("Book has already been uploaded!");
@@ -77,8 +81,6 @@ public class BookService extends  AbstractService {
                 } else {
                     throw new BadRequestException("Too many characters in content!");
                 }
-                //  if () //genres
-
                 bookRepository.save(book);
                 return modelMapper.map(book, ShowBookDTO.class);
             }
@@ -94,19 +96,19 @@ public class BookService extends  AbstractService {
             System.out.println("Book with isbn = " + isbn + " have been deleted!");
             return;
         }
-        throw new UnauthorizedException("Yo can't delete books!");
+        throw new UnauthorizedException("You can't delete books!");
     }
 
     //                        ----------Cover------------
-    public ShowBookDTO uploadCover(MultipartFile fl, long isbn, int id){
+    public ShowBookDTO uploadCover(MultipartFile file, long isbn, int id){
         if(id==ADMIN_ID){
-            Book b=getBookByISBN(isbn);  //todo delete DTOs for pic upload
-            String ext= FilenameUtils.getExtension(fl.getOriginalFilename());
-            String name="uploads"+ File.separator+System.nanoTime()+File.separator+"."+ext;
+            Book b=getBookByISBN(isbn);
+            String ext= FilenameUtils.getExtension(file.getOriginalFilename());
+            String name="uploads"+ File.separator+System.nanoTime()+"."+ext;
             File f=new File(name);
             if(!f.exists()){
                 try {
-                    Files.copy(fl.getInputStream(), f.toPath());
+                    Files.copy(file.getInputStream(), f.toPath());
                 } catch (IOException e) {
                     throw new BadRequestException(e.getMessage());
                 }
@@ -139,6 +141,35 @@ public class BookService extends  AbstractService {
         }
         return false;
     }
+    public boolean validateGenres(List<Integer> genres){
+        Set<Integer> genreSet=genres.stream().collect(Collectors.toSet());
+        if(genreSet.size()!=genres.size()){
+            return false;
+        }
+        return true;
+    }
+    public List<Genre> createListForGenres(List<Integer> genresIds){
+        List<Genre> genres=new ArrayList<>();
+        for (Integer i:genresIds) {
+            genres.add(getGenreById(i));
+        }
+        return genres;
+    }
+
+    public List<GenreWithoutBooksDTO> createListForGenreDTO(List<Integer> genresIds){
+        List<GenreWithoutBooksDTO> genresWithoutBooks=new ArrayList<>();
+        for (Integer i:genresIds) {
+            GenreWithoutBooksDTO g=new GenreWithoutBooksDTO();
+            g.setId(i);
+            g.setName(getGenreById(i).getName());
+            genresWithoutBooks.add(g);
+        }
+        return genresWithoutBooks;
+    }
+
+
+
+  //                                --------QUERIES----------
 
     public ShowBookDTO getByIsbn(long isbn) {
         Book book = getBookByISBN(isbn);

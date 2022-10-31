@@ -3,7 +3,6 @@ package com.ittalents.goodreadsprojectv1.controller;
 
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.EditAuthorDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.UploadPictureDTO;
 import com.ittalents.goodreadsprojectv1.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,11 +17,11 @@ public class AuthorController extends AbstractController {
     private AuthorService authorService;
 
     @PostMapping("/authors/{id}/pic")
-    public AuthorWithoutBooksDTO uploadPicture(@RequestParam MultipartFile fl,
+    public AuthorWithoutBooksDTO uploadPicture(@RequestParam MultipartFile file,
                                                @PathVariable int id, HttpServletRequest request){
         int uid = getLoggedUserId(request);
         checkLog(uid);
-        return authorService.uploadPicture(fl,id, uid);
+        return authorService.uploadPicture(file,id, uid);
     }
 
     @PostMapping("/authors")

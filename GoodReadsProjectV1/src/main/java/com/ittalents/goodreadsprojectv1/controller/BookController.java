@@ -1,9 +1,7 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.UploadPictureDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.*;
-import com.ittalents.goodreadsprojectv1.model.entity.Genre;
+import com.ittalents.goodreadsprojectv1.model.entity.Book;
 import com.ittalents.goodreadsprojectv1.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,8 +9,6 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
-import java.net.http.HttpRequest;
-import java.util.List;
 
 @RestController
 public class BookController extends AbstractController {
@@ -28,7 +24,8 @@ public class BookController extends AbstractController {
     }
 
     @PutMapping("/books/{isbn}")
-    public ShowBookDTO editBook(@RequestBody EditBookDTO editDTO, HttpServletRequest request, @PathVariable long isbn){
+    public ShowBookDTO editBook(@RequestBody EditBookDTO editDTO, HttpServletRequest request,
+                                @PathVariable long isbn){
         int id = getLoggedUserId(request);
         checkLog(id);
         return bookService.editBook(editDTO,id, isbn);
@@ -49,10 +46,10 @@ public class BookController extends AbstractController {
     }
 
     @PostMapping("/books/{isbn}/cover")
-    public ShowBookDTO uploadPicture(@RequestParam MultipartFile fl,
+    public ShowBookDTO uploadPicture(@RequestParam MultipartFile file,
                                      @PathVariable long isbn, HttpServletRequest request){
         int id = getLoggedUserId(request);
         checkLog(id);
-        return bookService.uploadCover(fl, isbn, id);
+        return bookService.uploadCover(file, isbn, id);
     }
 }

@@ -2,10 +2,8 @@ package com.ittalents.goodreadsprojectv1.services;
 
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.EditAuthorDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.UploadPictureDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.Author;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
-import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import com.ittalents.goodreadsprojectv1.model.repository.AuthorRepository;
 import org.apache.commons.io.FilenameUtils;
@@ -49,15 +47,15 @@ public class AuthorService extends AbstractService {
         }
         throw new UnauthorizedException("You can't edit information about author!");
     }
-    public AuthorWithoutBooksDTO uploadPicture(MultipartFile fl, int id, int uid){
+    public AuthorWithoutBooksDTO uploadPicture(MultipartFile file, int id, int uid){
         if(uid==ADMIN_ID){
             Author a=findAuthorById(id);
-            String ext= FilenameUtils.getExtension(fl.getOriginalFilename());
-            String name="uploads"+File.separator+System.nanoTime()+File.separator+"."+ext;
+            String ext= FilenameUtils.getExtension(file.getOriginalFilename());
+            String name="uploads"+File.separator+System.nanoTime()+"."+ext;
             File f=new File(name);
             if(!f.exists()){
                 try {
-                    Files.copy(fl.getInputStream(), f.toPath());
+                    Files.copy(file.getInputStream(), f.toPath());
                 } catch (IOException e) {
                     throw new BadRequestException(e.getMessage());
                 }
@@ -77,10 +75,10 @@ public class AuthorService extends AbstractService {
             if(!validateName(dto.getFirstName()) || !validateName(dto.getLastName())){
                 throw new BadRequestException("Invalid name!");
             }
-            if(!validateSize(dto.getInformationForAuthor()) /*&& dto.getInformationForAuthor()!=null*/){
+            if(!validateSize(dto.getInformationForAuthor())){
                 throw new BadRequestException("Too many characters!");
             }
-            if(!validateLink(dto.getAuthorWebsite()) /*&& dto.getAuthorWebsite()!=null*/){
+            if(!validateLink(dto.getAuthorWebsite())){
                 throw new BadRequestException("Invalid link!");
             }
             author=modelMapper.map(dto, Author.class);
@@ -110,3 +108,5 @@ public class AuthorService extends AbstractService {
         return findAuthorById(aid);
     }
 }
+//todo validation for fic format?;;;           delete old pr pic
+//todo create two separate librairies for covers and pics

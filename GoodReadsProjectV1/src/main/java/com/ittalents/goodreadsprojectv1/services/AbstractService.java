@@ -22,14 +22,13 @@ public abstract class AbstractService {
     @Autowired
     protected ReviewRepository reviewRepository;
     @Autowired
-    @Autowired
     protected CommentRepository commentRepository;
      @Autowired
     protected AuthorRepository authorRepository;
     @Autowired
     protected ModelMapper modelMapper;
 
-    public static final double ADMIN_ID = 1;   //todo - questions on that
+    public static final double ADMIN_ID = 1;
 
 
     protected User getUserById(int uid) {
@@ -112,9 +111,5 @@ public abstract class AbstractService {
             return true;
         }
 
-
-//    protected boolean validatePic(String picture){
-//
-//    }
 }
 

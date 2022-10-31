@@ -2,6 +2,7 @@ package com.ittalents.goodreadsprojectv1.model.entity;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import javax.persistence.*;
 import java.util.List;
@@ -19,11 +20,6 @@ public class Genre {
     private String name;
     @ManyToMany(mappedBy = "likedGenres")
     private List<User> userLikedGenre;
-    @ManyToMany(mappedBy="bookGenres")
+    @ManyToMany(mappedBy = "bookGenres")
     private List<Book> booksInGenre;
-    public Genre(int id, String name) {
-        this.id = id;
-        this.name = name;
-    }
-    public Genre() {}
 }

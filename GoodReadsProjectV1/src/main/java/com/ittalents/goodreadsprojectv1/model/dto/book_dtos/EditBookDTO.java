@@ -11,5 +11,4 @@ public class EditBookDTO {
     private String content;
     private String cover;
     private String additionalInfo;
-    private List<GenreWithoutBooksDTO> genres;
 }

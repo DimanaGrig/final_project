@@ -4,6 +4,7 @@ import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooks
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Data
@@ -12,7 +13,6 @@ public class UploadBookDTO {
     private String name;
     private String content;
     private int authorId;
-    private int[] genres;
     private String additionalInfo;
-    // private List<GenreWithoutBooksDTO> genres;
+    private List<Integer> genres=new ArrayList<>(); //genresIds
 }

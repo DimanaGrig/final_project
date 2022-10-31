@@ -53,8 +53,5 @@ public class GenreService extends AbstractService {
         return response;
     }
 
-
-
-
 }
 
