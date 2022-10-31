@@ -21,19 +21,19 @@ public class ReviewController extends AbstractController {
         return reviewService.createNewReview(dto, id);
     }
 
-    @DeleteMapping("/reviews/{rid}/delete")
-    public void deleteReview(@PathVariable int rid, HttpServletRequest request) {
+    @DeleteMapping("/reviews")
+    public void deleteReview(@RequestParam int rid, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);
         reviewService.deleteReview(rid, id);
     }
 
-    @GetMapping("/reviews/{rid}")
-    public ReviewDTO getById(@PathVariable int rid) {
+    @GetMapping("/reviews")
+    public ReviewDTO getById(@RequestParam int rid) {
         return reviewService.geById(rid);
     }
 
-    @PutMapping("/reviews/edit")
+    @PutMapping("/reviews")
     public ReviewDTO editReview(@RequestBody ReviewChangeDTO dto, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);
@@ -41,8 +41,8 @@ public class ReviewController extends AbstractController {
     }
 
 
-    @PostMapping("/reviews/{rid}/likes")
-     public int like(@PathVariable int rid,HttpServletRequest request){
+    @PutMapping("/reviews/sth")
+     public int like(@RequestParam int rid,HttpServletRequest request){
         int id = getLoggedUserId(request);
         checkLog(id);
         return reviewService.like(rid,id);
