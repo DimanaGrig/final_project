@@ -24,19 +24,19 @@ public class CommentController extends  AbstractController{
         return commentService.createNewComment(dto, id);
     }
 
-    @DeleteMapping("/comments/{cid}/delete")
-    public void deleteComment(@PathVariable int cid, HttpServletRequest request) {
+    @DeleteMapping("/comments")
+    public void deleteComment(@RequestParam int cid, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);
         commentService.deleteComment(cid, id);
     }
 
-    @GetMapping("/comments/{cid}")
-    public CommentDTO getById(@PathVariable int cid) {
+    @GetMapping("/comments")
+    public CommentDTO getById(@RequestParam int cid) {
         return commentService.geById(cid);
     }
 
-    @PutMapping("/comments/edit")
+    @PutMapping("/comments")
     public CommentDTO editComment(@RequestBody CommentChangeDTO dto, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);

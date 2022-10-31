@@ -4,10 +4,7 @@ import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreUsersDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.services.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.List;
@@ -29,8 +26,8 @@ public class GenreController extends AbstractController {
     public GenreWithoutBooksDTO getById(@PathVariable int id) {
         return genreService.getById(id);
     }
-    @PostMapping("/genres/{gid}/like")
-    public GenreUsersDTO like(@PathVariable int gid, HttpServletRequest request) {
+    @PutMapping("/genres")
+    public GenreUsersDTO like(@RequestParam int gid, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);
         return genreService.like(gid, id);

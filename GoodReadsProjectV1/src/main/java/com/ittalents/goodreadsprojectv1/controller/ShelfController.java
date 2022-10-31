@@ -21,19 +21,19 @@ public class ShelfController extends AbstractController {
         return shelfService.createNewShelf(shelf, id);
     }
 
-    @DeleteMapping("/shelves/{sid}/delete")
-    public void deleteShelf(@PathVariable int sid, HttpServletRequest request) {
+    @DeleteMapping("/shelves")
+    public void deleteShelf(@RequestParam int sid, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);
         shelfService.deleteShelf(sid, id);
     }
 
-    @GetMapping("/shelves/{sid}")
-    public ShelfDTO getById(@PathVariable int sid) {
+    @GetMapping("/shelves")
+    public ShelfDTO getById(@RequestParam int sid) {
         return shelfService.geById(sid);
     }
 
-    @PutMapping("/shelves/edit")
+    @PutMapping("/shelves")
     public ShelfDTO editShelf(@RequestBody ShelfChangeDTO dto, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);

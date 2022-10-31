@@ -18,7 +18,6 @@ public class CommentService extends AbstractService {
 
 
     public CommentDTO createNewComment(CommentReqCreateDTO dto, int id) {
-        synchronized (getReviewById(dto.getReviewId())) {
             Comment comment = new Comment();
             Review review = getReviewById(dto.getReviewId());
             User user = getUserById(id);
@@ -28,7 +27,6 @@ public class CommentService extends AbstractService {
             comment.setUser(user);
             commentRepository.save(comment);
             return modelMapper.map(comment, CommentDTO.class);
-        }
     }
 
     public void deleteComment(int cid, int id) {

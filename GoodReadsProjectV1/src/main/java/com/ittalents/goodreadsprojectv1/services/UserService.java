@@ -4,8 +4,12 @@ import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsD
 import com.ittalents.goodreadsprojectv1.model.dto.users.*;
 import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
+import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +30,9 @@ public class UserService extends AbstractService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
 
-     @Transactional
+
+
+    @Transactional
     public UserRespWithoutPassDTO register(UserReqRegisterDTO dto) {
         String email = dto.getEmail();
         String pass = dto.getPass();
@@ -106,6 +112,9 @@ public class UserService extends AbstractService {
 
     public List<UserWithoutRelationsDTO> findAll() {
         List<User> users = userRepository.findAll();
+        if(users.size()==0){
+            throw new NotFoundException("We don't have any users at all.");
+        }
         return users.stream().map(u -> modelMapper.map(u, UserWithoutRelationsDTO.class)).collect(Collectors.toList());
     }
 
@@ -132,10 +141,10 @@ public class UserService extends AbstractService {
 
     public UserRespWithoutPassDTO changePass(UserReqChangePassDTO dto, int id) {
         String newPass = dto.getNewPassword();
-        String confirmNewPass= dto.getConfirmNewPassword();
+        String confirmNewPass = dto.getConfirmNewPassword();
         if (newPass.equals(confirmNewPass)) {
             User user = getUserById(id);
-            if (bCryptPasswordEncoder.matches(dto.getPassword(),user.getPass()) && validatePass(dto.getNewPassword())) {
+            if (bCryptPasswordEncoder.matches(dto.getPassword(), user.getPass()) && validatePass(dto.getNewPassword())) {
                 user.setPass(bCryptPasswordEncoder.encode(dto.getNewPassword()));
                 userRepository.save(user);
                 UserRespWithoutPassDTO dto1 = modelMapper.map(user, UserRespWithoutPassDTO.class);
@@ -176,11 +185,31 @@ public class UserService extends AbstractService {
         return dto1;
     }
 
-    public List<UserRespWithoutPassDTO> findAllUserByEmail(String email){
+    public UserWithoutRelationsDTO findUserByEmail(String email) {
         if (!validateEmail(email)) {
             throw new BadRequestException("Wrong Credentials");
         }
-        List<User> users = userRepository.findAllByEmail(email);
-        return users.stream().map(user -> modelMapper.map(user, UserRespWithoutPassDTO.class)).collect(Collectors.toList());
+        User user = findByEmail(email);
+        return modelMapper.map(user, UserWithoutRelationsDTO.class);
     }
+
+    public UserShelvesDTO findAllUserShelves(int uid) {
+        User u = getUserById(uid);
+        UserShelvesDTO dto = modelMapper.map(u, UserShelvesDTO.class);
+        dto.setUserShelves(u.getUserShelves().stream().map((sh -> modelMapper.map(sh, ShelfWithoutRelationsDTO.class))).collect(Collectors.toList()));
+        return dto;
+    }
+
+    public List<UserWithoutRelationsDTO> findByName(String name) {
+        List<User> users = findAllByName(name);
+        return users.stream().map(user -> modelMapper.map(user, UserWithoutRelationsDTO.class)).collect(Collectors.toList());
+    }
+
+    public Page<UserWithoutRelationsDTO> getAll(int page,int size){
+        Pageable pageable = PageRequest.of(page, size);
+        Page<User>  users =userRepository.findAll(pageable);
+        Page<UserWithoutRelationsDTO> usersDTO =users.map(user -> modelMapper.map(user,UserWithoutRelationsDTO.class));
+        return usersDTO;
+    }
+
 }
