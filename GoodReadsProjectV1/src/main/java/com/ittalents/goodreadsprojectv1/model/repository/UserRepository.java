@@ -25,7 +25,8 @@ public interface UserRepository extends JpaRepository<User, Integer> {
 
     public List<User> findAllByFirstNameLike(String name);
 
-    public Page<User> findAll(Pageable pageable);
+//    public Page<User>  findAllUsersWhoFollowId(int uid,Pageable pageable);
+
 
 
 }

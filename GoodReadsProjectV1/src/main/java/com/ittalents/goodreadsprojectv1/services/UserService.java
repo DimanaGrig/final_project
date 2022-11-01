@@ -1,20 +1,35 @@
 package com.ittalents.goodreadsprojectv1.services;
 
+import com.ittalents.goodreadsprojectv1.model.dao.UsersDAO;
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.comments.CommentWithoutRelationsDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewRespFriendDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.users.*;
+import com.ittalents.goodreadsprojectv1.model.entity.Author;
+import com.ittalents.goodreadsprojectv1.model.entity.Review;
 import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
+import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.sql.SQLException;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -29,7 +44,8 @@ public class UserService extends AbstractService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
-
+    @Autowired
+    private UsersDAO usersDAO;
 
 
     @Transactional
@@ -112,7 +128,7 @@ public class UserService extends AbstractService {
 
     public List<UserWithoutRelationsDTO> findAll() {
         List<User> users = userRepository.findAll();
-        if(users.size()==0){
+        if (users.size() == 0) {
             throw new NotFoundException("We don't have any users at all.");
         }
         return users.stream().map(u -> modelMapper.map(u, UserWithoutRelationsDTO.class)).collect(Collectors.toList());
@@ -205,10 +221,70 @@ public class UserService extends AbstractService {
         return users.stream().map(user -> modelMapper.map(user, UserWithoutRelationsDTO.class)).collect(Collectors.toList());
     }
 
-    public Page<UserWithoutRelationsDTO> getAll(int page,int size){
+    public Page<UserWithoutRelationsDTO> getAll(int page, int size) {
         Pageable pageable = PageRequest.of(page, size);
-        Page<User>  users =userRepository.findAll(pageable);
-        Page<UserWithoutRelationsDTO> usersDTO =users.map(user -> modelMapper.map(user,UserWithoutRelationsDTO.class));
+        Page<User> users = userRepository.findAll(pageable);
+        Page<UserWithoutRelationsDTO> usersDTO = users.map(user -> modelMapper.map(user, UserWithoutRelationsDTO.class));
         return usersDTO;
+    }
+
+    public UserReviewsDTO getUserReviews(int uid) {
+        User user = getUserById(uid);
+        UserReviewsDTO dto = modelMapper.map(user, UserReviewsDTO.class);
+        dto.setWrittenReviews(user.getWrittenReviews().stream().map(re -> modelMapper.map(re, ReviewWithoutRelationsDTO.class)).collect(Collectors.toList()));
+        return dto;
+    }
+
+    public UserCommentsDTO getUserComments(int uid) {
+        User user = getUserById(uid);
+        UserCommentsDTO dto = modelMapper.map(user, UserCommentsDTO.class);
+        dto.setUserCommentsForReviews(user.getUserCommentsForReviews().stream().map(co -> modelMapper.map(co, CommentWithoutRelationsDTO.class)).collect(Collectors.toList()));
+        return dto;
+    }
+
+    public UserGenresDTO getUserGenres(int uid) {
+        User user = getUserById(uid);
+        UserGenresDTO dto = modelMapper.map(user, UserGenresDTO.class);
+        dto.setLikedGenres(user.getLikedGenres().stream().map(ge -> modelMapper.map(ge, GenreWithoutBooksDTO.class)).collect(Collectors.toList()));
+        return dto;
+    }
+
+    public int getAllReviews(int uid) {
+        User user = getUserById(uid);
+        return user.getWrittenReviews().size();
+    }
+
+    public double getAvrRate(int id) throws SQLException {
+        return usersDAO.getAvrRate(id);
+    }
+
+    public int getTotalRate(int id) throws SQLException {
+    return usersDAO.getReviewTotalRate(id);
+}
+    public int getSumRateReviews(int id)throws SQLException{
+        return usersDAO.getSumRate(id);
+    }
+
+    public List<UserRespFriendDTO> getUserFriends(int uid) throws SQLException {
+        return  usersDAO.getFriends(uid);
+    }
+
+    public UserWithoutRelationsDTO uploadPicture(MultipartFile file, int id, int uid){
+        User user = getUserById(id);
+                  String ext= FilenameUtils.getExtension(file.getOriginalFilename());
+            String name="uploads"+ File.separator+System.nanoTime()+"."+ext;
+            File f=new File(name);
+            if(!f.exists()){
+                try {
+                    Files.copy(file.getInputStream(), f.toPath());
+                } catch (IOException e) {
+                    throw new BadRequestException(e.getMessage());
+                }
+
+                user.setPhoto(name);
+                userRepository.save(user);
+                return modelMapper.map(user, UserWithoutRelationsDTO.class);
+            }
+            throw new BadRequestException("File exists!");
     }
 }
