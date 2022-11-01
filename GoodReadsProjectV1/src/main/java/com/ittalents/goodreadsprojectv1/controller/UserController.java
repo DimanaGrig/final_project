@@ -1,27 +1,26 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
 
-import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
+
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.users.*;
-import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import com.ittalents.goodreadsprojectv1.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
+import java.sql.SQLException;
 import java.util.List;
 
 @RestController
 public class UserController extends AbstractController {
     @Autowired
     private UserService userService;
-
 
 
     @PostMapping("/users")
@@ -59,7 +58,7 @@ public class UserController extends AbstractController {
     }
 
     //                          ----FOLLOW USER
-      @PutMapping("/users")
+    @PutMapping("/users")
     public UserFollowingDTO followUser(@RequestParam int fid, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);
@@ -74,7 +73,6 @@ public class UserController extends AbstractController {
     public List<UserWithoutRelationsDTO> getAllUsers() {
         return userService.findAll();
     }
-
 
 
     //                          ----CHANGE PASS
@@ -120,35 +118,67 @@ public class UserController extends AbstractController {
         return userService.findByName(name);
     }
 
+    //                          ----GET ALL USERS - Paginated Result
     @GetMapping("/users/page")
-    public Page<UserWithoutRelationsDTO> getAll(@RequestParam int page,@RequestParam int size){
-        return  userService.getAll(page,size);
+    public Page<UserWithoutRelationsDTO> getAll(@RequestParam int page, @RequestParam int size) {
+        return userService.getAll(page, size);
     }
 
-    //                          ----GET USER Followers
+    //                          ----GET USER's Friends
+    @GetMapping("users/friends")
+    public List<UserRespFriendDTO>  getFriends(@RequestParam int id) throws SQLException{
+        return userService.getUserFriends(id);
+
+    }
+
+    //                          ----GET USER reviews(sum)
+    @GetMapping("users/review")
+    public int getTotalReviews(@PathVariable int uid) {
+        return userService.getAllReviews(uid);
+    }
+
+    //    ----GET USER likedGenres
+    @GetMapping("users/gen")
+    public UserGenresDTO getUserGenres(@RequestParam int uid) {
+        return userService.getUserGenres(uid);
+    }
+
+    //                          ----GET USER comments
+    @GetMapping("users/com")
+    public UserCommentsDTO UserComments(@PathVariable int uid) {
+        return userService.getUserComments(uid);
+    }
 
 
-//                          ----GET USER Following
+    //                          ----GET USER reviews
+    @GetMapping("users/rev")
+    public UserReviewsDTO getUserReviews(@PathVariable int uid) {
+        return userService.getUserReviews(uid);
+    }
+    //                          ----GET AVRRate
+    @GetMapping("users/avrRate")
+    public double getAvrRateOfReviews(@RequestParam int id) throws SQLException {
+        return userService.getAvrRate(id);
+    }
+    //                          ----GET ReviewTotalRate
+    @GetMapping("users/total")
+    public int getTotalRate(@RequestParam int id) throws SQLException {
+        return userService.getTotalRate(id);
+    }
 
 
-//                          ----GET USER likedGenres
-
-
-
-//                          ----GET USER rating avr
-
-
-//                          ----GET USER rating total
-
-
-//                          ----GET USER reviews(sum)
-
-
-//                          ----GET USER comments
-
-
-//                          ----GET USER reviews
-
+        //                          ----GET ReviewSum
+        @GetMapping("users/sum")
+        public int getSumRate(@RequestParam int id) throws SQLException {
+            return userService.getSumRateReviews(id);
+        }
+    @PostMapping("/users/pic")
+    public UserWithoutRelationsDTO uploadPicture(@RequestParam MultipartFile file,
+                                               @PathVariable int id, HttpServletRequest request){
+        int uid = getLoggedUserId(request);
+        checkLog(uid);
+        return userService.uploadPicture(file,id, uid);
+    }
 
 }
 
