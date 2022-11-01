@@ -7,8 +7,7 @@ import java.util.List;
 
 @Data
 public class EditBookDTO {
-    //private long isbn;
+    private long isbn;
     private String content;
-    private String cover;
     private String additionalInfo;
 }

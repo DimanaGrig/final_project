@@ -1,5 +1,6 @@
 package com.ittalents.goodreadsprojectv1.services;
 
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithNameDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.*;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
@@ -8,15 +9,17 @@ import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
 
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 public abstract class AbstractService {
     @Autowired
     protected UserRepository userRepository;
-
-
     @Autowired
     protected ShelfRepository shelfRepository;
     @Autowired
@@ -25,7 +28,6 @@ public abstract class AbstractService {
     protected BookRepository bookRepository;
     @Autowired
     protected ReviewRepository reviewRepository;
-
     @Autowired
     protected CommentRepository commentRepository;
     @Autowired
@@ -64,20 +66,8 @@ public abstract class AbstractService {
         return reviewRepository.getReviewById(id).orElseThrow(() -> new NotFoundException("This review not exist."));
     }
 
-    protected boolean existByFirstAndLastName(String firstName, String lastName) {
-        return authorRepository.existsByFirstNameAndLastName(firstName, lastName);
-    }
-
-    protected void saveAuthor(Author a) {         //todo tova ok li e
-        authorRepository.save(a);
-    }
-
     protected Author findAuthorById(int aid) {
         return authorRepository.findAuthorById(aid).orElseThrow(() -> new BadRequestException("Author not found!"));
-    }
-
-    protected boolean existsAuthorById(int aid) {
-        return authorRepository.existsAuthorById(aid);
     }
 
     protected Author getAuthorById(int aid) {
@@ -131,5 +121,14 @@ public abstract class AbstractService {
         return users;
     }
 
+    public List<Author> getAuthorByKeyword(String keyword) {
+        List<Author> authors = authorRepository.findByFirstNameContainingIgnoreCase(keyword);
+        authors.addAll(authorRepository.findByLastNameContainingIgnoreCase(keyword));
+        Set<Author> set =new HashSet<>();
+        set.addAll(authors);
+        List<Author> result=new ArrayList<>();
+        result.addAll(set);
+        return result;
+    }
 }
 

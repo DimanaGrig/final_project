@@ -1,8 +1,10 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
 
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithNameDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.EditAuthorDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.ShowBookDTO;
 import com.ittalents.goodreadsprojectv1.services.AuthorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.List;
 
 @RestController
 public class AuthorController extends AbstractController {
@@ -25,19 +28,21 @@ public class AuthorController extends AbstractController {
     }
 
     @PostMapping("/authors")
-    public AuthorWithoutBooksDTO createAuthor(@RequestBody AuthorWithoutBooksDTO dto, HttpServletRequest request) {
+    public AuthorWithoutBooksDTO createAuthor(@RequestBody AuthorWithoutBooksDTO dto,
+                                              HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);
         return authorService.createAuthor(dto, id);
     }
 
-    @PutMapping("/authors/{id}")          //todo краси иска да махнем ид-то
-    public AuthorWithoutBooksDTO editAuthor(@RequestBody EditAuthorDTO editDTO, HttpServletRequest request,
-                                            @PathVariable int id) {
+    @PutMapping("/authors")
+    public AuthorWithoutBooksDTO editAuthor(@RequestBody EditAuthorDTO editDTO,
+                                            HttpServletRequest request) {
         int uid = getLoggedUserId(request);
         checkLog(uid);
-        return authorService.editAuthor(editDTO, uid, id);
+        return authorService.editAuthor(editDTO, uid);
     }
+
     @Transactional
     @DeleteMapping("/authors/{id}")
     public void deleteAuthor(HttpServletRequest request, @PathVariable int id) {
@@ -45,10 +50,19 @@ public class AuthorController extends AbstractController {
         checkLog(uid);
         authorService.deleteAuthor(id, uid);
     }
+
     @GetMapping("/authors/{id}")
     public AuthorWithoutBooksDTO getById(@PathVariable int id, HttpServletRequest request){
         int uid = getLoggedUserId(request);
         checkLog(uid);
-        return modelMapper.map(authorService.getById(id), AuthorWithoutBooksDTO.class);
+        return authorService.getById(id);
+    }
+
+    @GetMapping("/authors/search/{str}")
+    public List<AuthorWithNameDTO> getAuthorsByKeyword(HttpServletRequest request, @PathVariable String str) {
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        List<AuthorWithNameDTO> allAuthorsDto = authorService.getByKeyword(str);
+        return allAuthorsDto;
     }
 }

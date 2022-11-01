@@ -26,6 +26,7 @@ public class GenreController extends AbstractController {
     public GenreWithoutBooksDTO getById(@PathVariable int id) {
         return genreService.getById(id);
     }
+
     @PutMapping("/genres")
     public GenreUsersDTO like(@RequestParam int gid, HttpServletRequest request) {
         int id = getLoggedUserId(request);

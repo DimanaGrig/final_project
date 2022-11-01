@@ -211,5 +211,4 @@ public class UserService extends AbstractService {
         Page<UserWithoutRelationsDTO> usersDTO =users.map(user -> modelMapper.map(user,UserWithoutRelationsDTO.class));
         return usersDTO;
     }
-
 }

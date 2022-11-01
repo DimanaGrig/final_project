@@ -7,7 +7,7 @@ import java.util.List;
 
 @Data
 public class EditAuthorDTO {
-   // private int id;
+    private int id;
     private String informationForAuthor;
     private String authorWebsite;
 }

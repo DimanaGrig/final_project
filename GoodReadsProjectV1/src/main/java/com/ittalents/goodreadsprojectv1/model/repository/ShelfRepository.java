@@ -10,8 +10,8 @@ public interface ShelfRepository extends JpaRepository<Shelf,Integer> {
     public Optional<Shelf> findById(Integer id);
 
     public void deleteById(Integer id);
-public boolean existsById(Integer id);
-public Optional<Shelf> getShelfByName(String name);
+    public boolean existsById(Integer id);
+    public Optional<Shelf> getShelfByName(String name);
     public boolean existsByName(String name);
 
 }

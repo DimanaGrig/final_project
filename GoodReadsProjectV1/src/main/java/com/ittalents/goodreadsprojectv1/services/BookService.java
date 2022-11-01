@@ -1,9 +1,9 @@
 package com.ittalents.goodreadsprojectv1.services;
 
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithNameDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.*;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
-import com.ittalents.goodreadsprojectv1.model.entity.Book;
-import com.ittalents.goodreadsprojectv1.model.entity.Genre;
+import com.ittalents.goodreadsprojectv1.model.entity.*;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
@@ -19,6 +19,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
@@ -65,12 +66,13 @@ public class BookService extends  AbstractService {
         throw new UnauthorizedException("You can't upload books!");
     }
 
+
     //                  ----------EDIT BOOK-------
 
-    public ShowBookDTO editBook(EditBookDTO dto, int uid, long isbn) {
-        Book book = getBookByISBN(isbn);
+    public ShowBookDTO editBook(EditBookDTO dto, int uid) {
+        Book book = getBookByISBN(dto.getIsbn());
         if (uid == ADMIN_ID) {
-            if (bookRepository.existsByIsbn(isbn)) {
+            if (bookRepository.existsByIsbn(dto.getIsbn())) {
                 if (validateSize(dto.getAdditionalInfo())) {
                     book.setAdditionalInfo(dto.getAdditionalInfo());
                 } else {
@@ -89,6 +91,7 @@ public class BookService extends  AbstractService {
         throw new UnauthorizedException("You can't edit this book!");
     }
 
+
     //              ---------------DELETE-------------
     public void deleteBook(long isbn, int uid) {
         if (uid == ADMIN_ID) {
@@ -99,18 +102,23 @@ public class BookService extends  AbstractService {
         throw new UnauthorizedException("You can't delete books!");
     }
 
+
     //                        ----------Cover------------
     public ShowBookDTO uploadCover(MultipartFile file, long isbn, int id){
         if(id==ADMIN_ID){
             Book b=getBookByISBN(isbn);
             String ext= FilenameUtils.getExtension(file.getOriginalFilename());
-            String name="uploads"+ File.separator+System.nanoTime()+"."+ext;
+            String name="uploads"+File.separator+"covers"+ File.separator+System.nanoTime()+"."+ext;
             File f=new File(name);
             if(!f.exists()){
                 try {
                     Files.copy(file.getInputStream(), f.toPath());
                 } catch (IOException e) {
                     throw new BadRequestException(e.getMessage());
+                }
+                if(b.getBookCover()!=null){
+                    File old=new File(b.getBookCover());
+                    old.delete();
                 }
                 b.setBookCover(name);
                 bookRepository.save(b);
@@ -120,6 +128,7 @@ public class BookService extends  AbstractService {
         }
         throw new UnauthorizedException("You can't upload pictures!");
     }
+
 
     //                              ----------VALIDATION METHODS-----------
     public boolean validateISBN(long isbn) {
@@ -141,6 +150,7 @@ public class BookService extends  AbstractService {
         }
         return false;
     }
+
     public boolean validateGenres(List<Integer> genres){
         Set<Integer> genreSet=genres.stream().collect(Collectors.toSet());
         if(genreSet.size()!=genres.size()){
@@ -148,6 +158,8 @@ public class BookService extends  AbstractService {
         }
         return true;
     }
+    //                                 -------------OTHER------------------
+
     public List<Genre> createListForGenres(List<Integer> genresIds){
         List<Genre> genres=new ArrayList<>();
         for (Integer i:genresIds) {
@@ -167,13 +179,70 @@ public class BookService extends  AbstractService {
         return genresWithoutBooks;
     }
 
-
-
   //                                --------QUERIES----------
 
     public ShowBookDTO getByIsbn(long isbn) {
         Book book = getBookByISBN(isbn);
         ShowBookDTO dto = modelMapper.map(book, ShowBookDTO.class);
         return dto;
+    }
+
+    public List<ShowBookDTO> getBooksByTitle(String str){
+            List<Book> books = bookRepository.findByNameContainingIgnoreCase(str);
+            List<ShowBookDTO> allBooksDTO = books.stream().
+                    map(b -> modelMapper.map(b, ShowBookDTO.class)).
+                    collect(Collectors.toList());
+            return allBooksDTO;
+    }
+
+    public List<ShowBookDTO> getBooksByTitleAndAuthorKeyword(String keyword){
+        List<ShowBookDTO> allBooks=getBooksByTitle(keyword);
+        allBooks.addAll(getBooksByAuthorKeyword(keyword));
+        Set<ShowBookDTO> set=new HashSet<>();
+        set.addAll(allBooks);
+        List<ShowBookDTO> result=new ArrayList<>();
+        result.addAll(set);
+        return result;
+    }
+
+    public List<ShowBookDTO> getBooksByAuthorKeyword(String keyword){
+        List<Author> authors=getAuthorByKeyword(keyword);
+        List<Book> books=new ArrayList<>();
+        for (Author a:authors) {
+            books.addAll(a.getAllBooks());
+        }
+        return books.stream().
+        map(b -> modelMapper.map(b, ShowBookDTO.class)).
+               collect(Collectors.toList());
+    }
+
+    public List<ShowBookDTO> getRecommendations(int userId) {
+        User user = getUserById(userId);
+        List<Genre> favGenres = user.getLikedGenres();
+        Set<Book> userBooks = new HashSet<>();
+        List<Author> favAuthors = new ArrayList<>();
+        List<Book> booksForRecommendation = new ArrayList<>();
+        for (Shelf s : user.getUserShelves()) {
+            for (Book b : s.getBooksAtThisShelf()) {
+                userBooks.add(b);
+                Author a = b.getAuthor();
+                favAuthors.add(a);
+            }
+        }
+        for (Genre g : favGenres) {
+            for (Book b : g.getBooksInGenre()) {
+                userBooks.add(b);
+            }
+        }
+        for (Author a : favAuthors) {
+            for (Book b : a.getAllBooks()) {
+                userBooks.add(b);
+            }
+        }
+        List<Book> booksToRec = new ArrayList<>();
+        booksToRec.addAll(userBooks);
+        return booksToRec.stream().
+                map(b -> modelMapper.map(b, ShowBookDTO.class)).
+                collect(Collectors.toList());
     }
 }
