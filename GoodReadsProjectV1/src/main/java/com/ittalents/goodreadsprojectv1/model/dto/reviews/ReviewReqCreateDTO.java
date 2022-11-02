@@ -6,14 +6,13 @@ import org.springframework.beans.factory.annotation.Value;
 
 import javax.validation.constraints.Max;
 import javax.validation.constraints.Min;
+import javax.validation.constraints.Size;
 
 @Data
 public class ReviewReqCreateDTO {
-    private long bookIsbn ;
+    private long bookIsbn;
     private int shelfId;
     private String shelfName;
-    @Min(0)
-    @Max(5)
     private int rate;
     private String opinion;
 

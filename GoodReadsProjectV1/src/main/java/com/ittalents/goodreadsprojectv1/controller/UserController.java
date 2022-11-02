@@ -54,7 +54,6 @@ public class UserController extends AbstractController {
         userService.delete(id);
         request.getSession().invalidate();
     }
-
     @PutMapping("/users")
     public UserFollowingDTO followUser(@RequestParam int fid, HttpServletRequest request) {
         int id = getLoggedUserId(request);
@@ -70,20 +69,16 @@ public class UserController extends AbstractController {
         return userService.findAll();
     }
 
-
     @PutMapping("/users/sth")
     public UserRespWithoutPassDTO changePass(@RequestBody UserReqChangePassDTO dto, HttpServletRequest request) {
         int id = getLoggedUserId(request);
         checkLog(id);
         return userService.changePass(dto, id);
-
     }
-
     @GetMapping("/users/sth")
     public UserRespWithoutPassDTO getById(@RequestParam int uid) {
         return userService.getById(uid);
     }
-
 
     @PutMapping("/users/user")
     public UserRespWithoutPassDTO editProfile(@RequestBody UserEditProfile dto, HttpServletRequest request) {
@@ -91,7 +86,6 @@ public class UserController extends AbstractController {
         checkLog(id);
         return userService.editProfile(dto, id);
     }
-
     @GetMapping("users/user")
     public UserWithoutRelationsDTO getUserByEmail(@RequestParam String email) {
         return userService.findUserByEmail(email);
@@ -107,18 +101,10 @@ public class UserController extends AbstractController {
     public List<UserWithoutRelationsDTO> findUsersByName(@RequestParam String name) {
         return userService.findByName(name);
     }
-
     @GetMapping("/users/page")
     public Page<UserWithoutRelationsDTO> getAll(@RequestParam int page, @RequestParam int size) {
         return userService.getAll(page, size);
     }
-
-    @GetMapping("users/friends")
-    public List<UserRespFriendDTO>  getFriends(@RequestParam int id){
-        return userService.getUserFriends(id);
-
-    }
-
     @GetMapping("users/review")
     public int getTotalReviews(@PathVariable int uid) {
         return userService.getAllReviews(uid);
@@ -150,7 +136,6 @@ public class UserController extends AbstractController {
     public int getTotalRate(@RequestParam int id) {
         return userService.getTotalRate(id);
     }
-
         @GetMapping("users/sum")
         public int getSumRate(@RequestParam int id)  {
             return userService.getSumRateReviews(id);

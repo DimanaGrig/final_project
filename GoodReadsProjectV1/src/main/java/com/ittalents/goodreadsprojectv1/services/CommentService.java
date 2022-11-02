@@ -18,19 +18,20 @@ public class CommentService extends AbstractService {
 
 
     public CommentDTO createNewComment(CommentReqCreateDTO dto, int id) {
-            Comment comment = new Comment();
-            Review review = getReviewById(dto.getReviewId());
-            User user = getUserById(id);
-            comment.setComment(dto.getComment());
-            comment.setCommentReview(review);
-            comment.setCommentedAt(LocalDateTime.now());
-            comment.setUser(user);
-            commentRepository.save(comment);
-            return modelMapper.map(comment, CommentDTO.class);
+        checkForLength(dto.getComment());
+        Comment comment = new Comment();
+        Review review = getReviewById(dto.getReviewId());
+        User user = getUserById(id);
+        comment.setComment(dto.getComment());
+        comment.setCommentReview(review);
+        comment.setCommentedAt(LocalDateTime.now());
+        comment.setUser(user);
+        commentRepository.save(comment);
+        return modelMapper.map(comment, CommentDTO.class);
     }
 
     public void deleteComment(int cid, int id) {
-        Comment comment  = getCommentById(cid);
+        Comment comment = getCommentById(cid);
         if (comment.getUser().getId() == id) {
             commentRepository.deleteById(cid);
             System.out.println("Comment with id " + id + "has been deleted.");
@@ -38,11 +39,13 @@ public class CommentService extends AbstractService {
             throw new UnauthorizedException("You can't delete this review!");
         }
     }
+
     public CommentDTO editComment(CommentChangeDTO dto, int id) {
         Comment comment = getCommentById(dto.getId());
         if (comment.getUser().getId() != id) {
             throw new UnauthorizedException("This comment is not yours to change it!");
         }
+        checkForLength(comment.getComment());
         comment.setComment(dto.getNewComment());
         comment.setCommentedAt(LocalDateTime.now());
         commentRepository.save(comment);
