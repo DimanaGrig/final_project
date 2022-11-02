@@ -46,7 +46,7 @@ public abstract class AbstractService {
 
     protected Book getBookByISBN(long isbn) {
         if (bookRepository.existsByIsbn(isbn)) {
-            return bookRepository.findByIsbn(isbn).orElseThrow(() -> new NotFoundException("Shelf not found!"));
+            return bookRepository.findByIsbn(isbn).orElseThrow(() -> new NotFoundException("Book not found!"));
         }
         return null;
     }

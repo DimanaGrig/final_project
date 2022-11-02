@@ -1,6 +1,8 @@
 package com.ittalents.goodreadsprojectv1.services;
 
+import com.ittalents.goodreadsprojectv1.controller.ShelfController;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookWithoutRelationsDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfAddBookDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfChangeDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfReqCreateDTO;
@@ -8,38 +10,38 @@ import com.ittalents.goodreadsprojectv1.model.dto.users.UserWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.Book;
 import com.ittalents.goodreadsprojectv1.model.entity.Shelf;
 import com.ittalents.goodreadsprojectv1.model.entity.User;
+import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
 public class ShelfService extends AbstractService {
 
+    public static final String[] basicShelves = {"read", "to read", "current_read"};
+
     public void createBasicShelves(User u) {
-        Shelf s1 = new Shelf();
-        s1.setName("read");
-        s1.setUser(u);
-        s1.setFromBeggining(true);
-        u.getUserShelves().add(s1);
-        Shelf s2 = new Shelf();
-        s2.setName("to_read");
-        s2.setUser(u);
-        s2.setFromBeggining(true);
-        u.getUserShelves().add(s2);
-        Shelf s3 = new Shelf();
-        s3.setName("current_read");
-        s3.setUser(u);
-        s3.setFromBeggining(true);
-        u.getUserShelves().add(s3);
-        shelfRepository.save(s1);
-        shelfRepository.save(s2);
-        shelfRepository.save(s3);
+        for (int i = 0; i < basicShelves.length; i++) {
+            Shelf s1 = new Shelf();
+            s1.setName(basicShelves[i]);
+            s1.setUser(u);
+            s1.setFromBeggining(true);
+            u.getUserShelves().add(s1);
+            shelfRepository.save(s1);
+        }
     }
 
     public ShelfDTO createNewShelf(ShelfReqCreateDTO shelf, int id) {
-        Shelf shelf1 = modelMapper.map(shelf, Shelf.class);
         User u = getUserById(id);
+        List<Shelf> shelfList = u.getUserShelves();
+        for (int i = 0; i < shelfList.size(); i++) {
+            if (shelfList.get(i).getName().equals(shelf.getName())) {
+                throw new BadRequestException("You already have shelf with that name.");
+            }
+        }
+        Shelf shelf1 = modelMapper.map(shelf, Shelf.class);
         shelf1.setUser(u);
         shelfRepository.save(shelf1);
         u.getUserShelves().add(shelf1);
@@ -70,21 +72,41 @@ public class ShelfService extends AbstractService {
 
     public ShelfDTO editShelf(ShelfChangeDTO dto, int uid) {
         Shelf shelf = getShelfById(dto.getId());
-        Book  book = getBookByISBN(dto.getIsbn());
         if (shelf.getUser().getId() == uid) {
-            if (book != null) {
-                shelf.getBooksAtThisShelf().add(book);
-            }
             if (!shelf.isFromBeggining() && shelf.getName().equals(dto.getName())) {
                 if (dto.getNewName() != null) {
                     shelf.setName(dto.getNewName());
+                    shelfRepository.save(shelf);
+                } else {
+                    throw new BadRequestException("You have to choose a new name for this shelf!");
                 }
             } else {
-                throw new UnauthorizedException("You don't have authorized!");
+                throw new UnauthorizedException("You can't do this!");
             }
-            shelfRepository.save(shelf);
+        } else {
+            throw new UnauthorizedException("This shelf is not your to change it!");
         }
         return modelMapper.map(shelf, ShelfDTO.class);
     }
+
+    public ShelfDTO addBookToShelf(ShelfAddBookDTO dto, int uid) {
+        User user = getUserById(uid);
+        Shelf shelf = getShelfById(dto.getId());
+        if (!(shelf.getUser().getId() == user.getId())) {
+            throw new UnauthorizedException("This shelf is not yours.");
+        }
+        Book book = getBookByISBN(dto.getIsbn());
+        if (shelf.getBooksAtThisShelf().contains(book)) {
+            throw new BadRequestException("You already have this book at that Shelf.");
+        }
+        shelf.getBooksAtThisShelf().add(book);
+        shelfRepository.save(shelf);
+        List<Book> books = shelf.getBooksAtThisShelf();
+        ShelfDTO dto1 = modelMapper.map(shelf, ShelfDTO.class);
+        dto1.setBooksAtThisShelf(books.stream().map(book1 -> modelMapper.map(book1, BookWithoutRelationsDTO.class)).collect(Collectors.toList()));
+        return dto1;
+    }
 }
+
+
 

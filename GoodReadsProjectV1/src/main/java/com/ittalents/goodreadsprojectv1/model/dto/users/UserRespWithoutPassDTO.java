@@ -6,6 +6,7 @@ import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDT
 import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
 import lombok.Data;
+import org.springframework.data.domain.Page;
 
 import java.time.LocalDateTime;
 import java.util.List;

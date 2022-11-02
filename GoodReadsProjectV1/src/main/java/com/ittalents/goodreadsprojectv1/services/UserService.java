@@ -1,25 +1,19 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.dao.UsersDAO;
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
+import com.ittalents.goodreadsprojectv1.model.dao.UsersDao;
+
 import com.ittalents.goodreadsprojectv1.model.dto.comments.CommentWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewRespFriendDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.users.*;
-import com.ittalents.goodreadsprojectv1.model.entity.Author;
-import com.ittalents.goodreadsprojectv1.model.entity.Review;
 import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -45,8 +39,7 @@ public class UserService extends AbstractService {
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
     @Autowired
-    private UsersDAO usersDAO;
-
+    private UsersDao usersDAO;
 
     @Transactional
     public UserRespWithoutPassDTO register(UserReqRegisterDTO dto) {
@@ -212,7 +205,9 @@ public class UserService extends AbstractService {
     public UserShelvesDTO findAllUserShelves(int uid) {
         User u = getUserById(uid);
         UserShelvesDTO dto = modelMapper.map(u, UserShelvesDTO.class);
-        dto.setUserShelves(u.getUserShelves().stream().map((sh -> modelMapper.map(sh, ShelfWithoutRelationsDTO.class))).collect(Collectors.toList()));
+        dto.setUserShelves(u.getUserShelves().stream().map(sh -> modelMapper.map(sh, ShelfWithoutRelationsDTO.class)).collect(Collectors.toList()));
+
+
         return dto;
     }
 
@@ -259,32 +254,32 @@ public class UserService extends AbstractService {
     }
 
     public int getTotalRate(int id) throws SQLException {
-    return usersDAO.getReviewTotalRate(id);
-}
-    public int getSumRateReviews(int id)throws SQLException{
+        return usersDAO.getReviewTotalRate(id);
+    }
+
+    public int getSumRateReviews(int id) throws SQLException {
         return usersDAO.getSumRate(id);
     }
 
     public List<UserRespFriendDTO> getUserFriends(int uid) throws SQLException {
-        return  usersDAO.getFriends(uid);
+        return usersDAO.getFriends(uid);
     }
 
-    public UserWithoutRelationsDTO uploadPicture(MultipartFile file, int id, int uid){
+    public UserWithoutRelationsDTO uploadPicture(MultipartFile file, int id, int uid) {
         User user = getUserById(id);
-                  String ext= FilenameUtils.getExtension(file.getOriginalFilename());
-            String name="uploads"+ File.separator+System.nanoTime()+"."+ext;
-            File f=new File(name);
-            if(!f.exists()){
-                try {
-                    Files.copy(file.getInputStream(), f.toPath());
-                } catch (IOException e) {
-                    throw new BadRequestException(e.getMessage());
-                }
-
-                user.setPhoto(name);
-                userRepository.save(user);
-                return modelMapper.map(user, UserWithoutRelationsDTO.class);
+        String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+        String name = "uploads" + File.separator + System.nanoTime() + "." + ext;
+        File f = new File(name);
+        if (!f.exists()) {
+            try {
+                Files.copy(file.getInputStream(), f.toPath());
+            } catch (IOException e) {
+                throw new BadRequestException(e.getMessage());
             }
-            throw new BadRequestException("File exists!");
+            user.setPhoto(name);
+            userRepository.save(user);
+            return modelMapper.map(user, UserWithoutRelationsDTO.class);
+        }
+        throw new BadRequestException("File exists!");
     }
 }

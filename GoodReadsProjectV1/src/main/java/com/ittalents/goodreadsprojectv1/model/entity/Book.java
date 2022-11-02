@@ -12,7 +12,6 @@ import java.util.Set;
 @Data
 public class Book {
     @Id
-//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long isbn;
     @Column
     private String name;

@@ -1,8 +1,10 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
+import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfAddBookDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfChangeDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfReqCreateDTO;
+import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.services.ShelfService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -38,6 +40,16 @@ public class ShelfController extends AbstractController {
         int id = getLoggedUserId(request);
         checkLog(id);
         return shelfService.editShelf(dto, id);
+    }
+
+    @PutMapping("/shelves/ed")
+    public ShelfDTO addBookToShelf(@RequestBody ShelfAddBookDTO dto, HttpServletRequest request) {
+        if (dto.getId() ==  0) {
+            throw new BadRequestException("Please, go and create a shelf or choose some already exist.");
+        }
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        return shelfService.addBookToShelf(dto, id);
     }
 
 }

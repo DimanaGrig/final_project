@@ -3,6 +3,7 @@ package com.ittalents.goodreadsprojectv1.controller;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.*;
 import com.ittalents.goodreadsprojectv1.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -54,27 +55,33 @@ public class BookController extends AbstractController {
         return bookService.uploadCover(file, isbn, id);
     }
 
-    @GetMapping("books/recommended")
+    @GetMapping("/books/search/{str}")
+    public List<ShowBookDTO> getBooksByTitle(HttpServletRequest request, @PathVariable String str) {
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        List<ShowBookDTO> allBooksDto = bookService.getBooksByTitle(str);
+        return allBooksDto;
+    }
+
+    @GetMapping("/books/find/{str}")
+    public List<ShowBookDTO> getBooksByTitleAndAuthorKeyword(HttpServletRequest request, @PathVariable String str) {
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        List<ShowBookDTO> allBooksDto = bookService.getBooksByTitleAndAuthorKeyword(str);
+        return allBooksDto;
+    }
+
+    @GetMapping("books/recommended")      //todo ne e testvano
     public List<ShowBookDTO> getRecommendations( HttpServletRequest request){
         int id = getLoggedUserId(request);
         checkLog(id);
         List<ShowBookDTO> allBooksDto = bookService.getRecommendations(id);
         return allBooksDto;
     }
-    @GetMapping("/books/find/{str}")
-    public List<BookWithoutRelationsDTO> getBooksByKeyword(@PathVariable String str,
-                                                            HttpServletRequest request) throws SQLException {
-        int id = getLoggedUserId(request);
-        checkLog(id);
-        List<BookWithoutRelationsDTO> allBooksDto = bookService.getBooksByKeyword(str);
-        return allBooksDto;
-    }
-    @GetMapping("/books/search/{str}")
-    public List<BookWithoutRelationsDTO> getBooksByKeywordInTitle(@PathVariable String str,
-                                                            HttpServletRequest request) throws SQLException {
-        int id = getLoggedUserId(request);
-        checkLog(id);
-        List<BookWithoutRelationsDTO> allBooksDto = bookService.getBooksByKeywordInTitle(str);
-        return allBooksDto;
+
+    @GetMapping("/books/home")
+    public List<BookHomePageDTO>  getHomePage() {
+        return bookService.getHomePage();
     }
 }
+
