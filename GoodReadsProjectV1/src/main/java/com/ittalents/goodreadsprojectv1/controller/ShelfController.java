@@ -39,7 +39,6 @@ public class ShelfController extends AbstractController {
         checkLog(id);
         return shelfService.editShelf(dto, id);
     }
-
 }
 
 

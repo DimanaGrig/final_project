@@ -41,23 +41,23 @@ public class AuthorController extends AbstractController {
     }
 
     @Transactional
-    @DeleteMapping("/authors/{id}")
-    public void deleteAuthor(HttpServletRequest request, @PathVariable int id) {
+    @DeleteMapping("/authors")
+    public void deleteAuthor(HttpServletRequest request, @RequestParam int id) {
         int uid = getLoggedUserId(request);
         checkLog(uid);
         authorService.deleteAuthor(id, uid);
     }
 
-    @GetMapping("/authors/{id}")
-    public AuthorWithoutBooksDTO getById(@PathVariable int id, HttpServletRequest request){
+    @GetMapping("/authors")
+    public AuthorWithoutBooksDTO getById(@RequestParam int id, HttpServletRequest request){
         int uid = getLoggedUserId(request);
         checkLog(uid);
         return authorService.getById(id);
     }
 
-    @GetMapping("authors/key/{str}")
+    @GetMapping("authors/key")
     public List<AuthorWithoutRelationsDTO> getAuthorsByKeyword(HttpServletRequest request,
-                                                               @PathVariable String str) throws SQLException {
+                                                               @RequestParam String str) throws SQLException {
         int id = getLoggedUserId(request);
         checkLog(id);
         List<AuthorWithoutRelationsDTO> allAuthorsDto =  authorService.getAuthorsByKeyword(str);

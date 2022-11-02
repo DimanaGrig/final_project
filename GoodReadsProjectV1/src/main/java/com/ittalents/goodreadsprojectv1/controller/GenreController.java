@@ -40,11 +40,10 @@ public class GenreController extends AbstractController {
         checkLog(id);
         return genreService.createGenre(id, dto);
     }
-    @DeleteMapping("/genres/{id}")
-    public void deleteGenre(HttpServletRequest request, @PathVariable int id) {
+    @DeleteMapping("/genres")
+    public void deleteGenre(HttpServletRequest request, @RequestParam int id) {
         int uid = getLoggedUserId(request);
         checkLog(uid);
         genreService.deleteGenre(id, uid);
     }
-
 }

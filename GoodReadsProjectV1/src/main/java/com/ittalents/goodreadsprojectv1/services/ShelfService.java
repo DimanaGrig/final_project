@@ -80,7 +80,7 @@ public class ShelfService extends AbstractService {
                     shelf.setName(dto.getNewName());
                 }
             } else {
-                throw new UnauthorizedException("You don't have authorized!");
+                throw new UnauthorizedException("You are not authorized!");
             }
             shelfRepository.save(shelf);
         }

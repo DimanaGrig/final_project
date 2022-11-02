@@ -31,16 +31,16 @@ public class BookController extends AbstractController {
         return bookService.editBook(editDTO,id);
     }
 
-    @GetMapping("/books/{isbn}")
-    public ShowBookDTO getByIsbn(@PathVariable long isbn, HttpServletRequest request){
+    @GetMapping("/books")
+    public ShowBookDTO getByIsbn(@RequestParam long isbn, HttpServletRequest request){
         int id = getLoggedUserId(request);
         checkLog(id);
         return bookService.getByIsbn(isbn);
     }
 
     @Transactional
-    @DeleteMapping("/books/{isbn}")
-    public void deleteBook(HttpServletRequest request, @PathVariable long isbn) {
+    @DeleteMapping("/books")
+    public void deleteBook(HttpServletRequest request, @RequestParam long isbn) {
         int id = getLoggedUserId(request);
         checkLog(id);
         bookService.deleteBook(isbn, id);
@@ -61,16 +61,16 @@ public class BookController extends AbstractController {
         List<ShowBookDTO> allBooksDto = bookService.getRecommendations(id);
         return allBooksDto;
     }
-    @GetMapping("/books/key/{str}")
-    public List<BookWithoutRelationsDTO> getBooksByKeyword(@PathVariable String str,
+    @GetMapping("/books/key")
+    public List<BookWithoutRelationsDTO> getBooksByKeyword(@RequestParam String str,
                                                             HttpServletRequest request) throws SQLException {
         int id = getLoggedUserId(request);
         checkLog(id);
         List<BookWithoutRelationsDTO> allBooksDto = bookService.getBooksByKeyword(str);
         return allBooksDto;
     }
-    @GetMapping("/books/key-title/{str}")
-    public List<BookWithoutRelationsDTO> getBooksByKeywordInTitle(@PathVariable String str,
+    @GetMapping("/books/keytit")
+    public List<BookWithoutRelationsDTO> getBooksByKeywordInTitle(@RequestParam String str,
                                                             HttpServletRequest request) throws SQLException {
         int id = getLoggedUserId(request);
         checkLog(id);
