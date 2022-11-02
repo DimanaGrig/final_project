@@ -36,6 +36,8 @@ public class ReviewService extends AbstractService {
         Review review = new Review();
         User user = getUserById(id);
         Book book = getBookByISBN(dto.getBookIsbn());
+        checkForLength(dto.getOpinion());
+        checkValidRate(dto.getRate());
         if (dto.getShelfId() == 0) {
             String shelfName = dto.getShelfName();
             ShelfReqCreateDTO shelf = new ShelfReqCreateDTO();
@@ -44,10 +46,13 @@ public class ReviewService extends AbstractService {
             dto.setShelfId(dto1.getId());
         }
         Shelf theShelf = getShelfById(dto.getShelfId());
-        if (!theShelf.getBooksAtThisShelf().contains(book)) {
-            theShelf.getBooksAtThisShelf().add(book);
-            shelfRepository.save(theShelf);
+        if (!(user.getUserShelves().contains(theShelf))) {
+            throw new BadRequestException("You can add book in that shelf.");
         }
+        if (!(theShelf.getBooksAtThisShelf().contains(book))) {
+            theShelf.getBooksAtThisShelf().add(book);
+        }
+        shelfRepository.save(theShelf);
         review.setUser(user);
         review.setBook(book);
         review.setOpinion(dto.getOpinion());
@@ -71,11 +76,14 @@ public class ReviewService extends AbstractService {
         if (review.getUser().getId() != id) {
             throw new UnauthorizedException("This review is not yours to change it!");
         }
+        checkForLength(dto.getOpinion());
+        checkValidRate(dto.getRate());
         review.setOpinion(dto.getOpinion());
         review.setRate(dto.getRate());
         reviewRepository.save(review);
         return modelMapper.map(review, ReviewDTO.class);
     }
+
     public ReviewDTO geById(int rid) {
         Review review = getReviewById(rid);
         ReviewDTO dto = modelMapper.map(review, ReviewDTO.class);
@@ -89,13 +97,12 @@ public class ReviewService extends AbstractService {
         return dto;
     }
 
-    public int like(int rid,int id){
-        Review review= getReviewById(rid);
+    public int like(int rid, int id) {
+        Review review = getReviewById(rid);
         User user = getUserById(id);
-        if(user.getLikedReviews().contains(review)){
+        if (user.getLikedReviews().contains(review)) {
             user.getLikedReviews().remove(review);
-        }
-        else{
+        } else {
             user.getLikedReviews().add(review);
         }
         userRepository.save(user);

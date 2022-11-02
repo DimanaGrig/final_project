@@ -11,6 +11,6 @@ public class ShelfChangeDTO {
     private int id;
     private String name ;
     private String newName;
-    private  long isbn;
+
 
 }

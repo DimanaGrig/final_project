@@ -3,6 +3,7 @@ package com.ittalents.goodreadsprojectv1.controller;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.*;
 import com.ittalents.goodreadsprojectv1.services.BookService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,4 +78,10 @@ public class BookController extends AbstractController {
         List<BookWithoutRelationsDTO> allBooksDto = bookService.getBooksByKeywordInTitle(str);
         return allBooksDto;
     }
+
+    @GetMapping("/books/home")
+    public List<BookHomePageDTO>  getHomePage() {
+        return bookService.getHomePage();
+    }
 }
+

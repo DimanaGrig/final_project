@@ -11,6 +11,8 @@ import com.ittalents.goodreadsprojectv1.model.repository.BookRepository;
 import org.apache.commons.io.FilenameUtils;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.relational.core.sql.SQL;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -237,4 +239,17 @@ public class BookService extends  AbstractService {
         }
         return result;
     }
+
+    public List<BookHomePageDTO> getHomePage() {
+        List<BookHelpDTO> books= bookDao.getHomePage();
+        List<BookHomePageDTO> result =books.stream().
+                map(b -> modelMapper.map(b, BookHomePageDTO.class)).
+                collect(Collectors.toList());
+        if(result.isEmpty()){
+            throw new  BadRequestException("No rate books!");
+        }
+        return result;
+        }
+
+
 }

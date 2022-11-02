@@ -46,7 +46,7 @@ public abstract class AbstractService {
 
     protected Book getBookByISBN(long isbn) {
         if (bookRepository.existsByIsbn(isbn)) {
-            return bookRepository.findByIsbn(isbn).orElseThrow(() -> new NotFoundException("Shelf not found!"));
+            return bookRepository.findByIsbn(isbn).orElseThrow(() -> new NotFoundException("Book not found!"));
         }
         return null;
     }
@@ -91,7 +91,7 @@ public abstract class AbstractService {
     }
 
     protected boolean validateLength(int length) {
-        if (length <= 40) {
+        if (length <= 45) {
             return true;
         }
         return false;
@@ -114,12 +114,24 @@ public abstract class AbstractService {
         }
         return users;
     }
-    public boolean validateFile(String name){
+
+    public boolean validateFile(String name) {
         Pattern pattern;
         pattern = Pattern.compile("([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)");
         Matcher matcher;
         matcher = pattern.matcher(name);
         return matcher.matches();
+    }
+
+    protected void checkForLength(String string) {
+        if (!validateSize(string)) {
+            throw new BadRequestException("The length of the text is too big!");
+        }
+    }
+    protected void checkValidRate(int rate) {
+        if (rate > 5 || rate < 1) {
+            throw new BadRequestException("Wrong credential.");
+        }
     }
 }
 

@@ -2,6 +2,7 @@ package com.ittalents.goodreadsprojectv1.model.dto.users;
 
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
 import lombok.Data;
+import org.springframework.data.domain.Page;
 
 import java.util.List;
 @Data
