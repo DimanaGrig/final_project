@@ -173,13 +173,11 @@ public class UserController extends AbstractController {
             return userService.getSumRateReviews(id);
         }
     @PostMapping("/users/pic")
-    public UserWithoutRelationsDTO uploadPicture(@RequestParam MultipartFile file,
-                                               @PathVariable int id, HttpServletRequest request){
+    public UserWithoutRelationsDTO uploadPicture(@RequestParam MultipartFile file, HttpServletRequest request){
         int uid = getLoggedUserId(request);
         checkLog(uid);
-        return userService.uploadPicture(file,id, uid);
+        return userService.uploadPicture(file, uid);
     }
-
 }
 
 

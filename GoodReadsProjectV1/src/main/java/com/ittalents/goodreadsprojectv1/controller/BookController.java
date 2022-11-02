@@ -61,7 +61,7 @@ public class BookController extends AbstractController {
         List<ShowBookDTO> allBooksDto = bookService.getRecommendations(id);
         return allBooksDto;
     }
-    @GetMapping("/books/find/{str}")
+    @GetMapping("/books/key/{str}")
     public List<BookWithoutRelationsDTO> getBooksByKeyword(@PathVariable String str,
                                                             HttpServletRequest request) throws SQLException {
         int id = getLoggedUserId(request);
@@ -69,7 +69,7 @@ public class BookController extends AbstractController {
         List<BookWithoutRelationsDTO> allBooksDto = bookService.getBooksByKeyword(str);
         return allBooksDto;
     }
-    @GetMapping("/books/search/{str}")
+    @GetMapping("/books/key-title/{str}")
     public List<BookWithoutRelationsDTO> getBooksByKeywordInTitle(@PathVariable String str,
                                                             HttpServletRequest request) throws SQLException {
         int id = getLoggedUserId(request);

@@ -55,7 +55,7 @@ public class AuthorController extends AbstractController {
         return authorService.getById(id);
     }
 
-    @GetMapping("authors/search/{str}")
+    @GetMapping("authors/key/{str}")
     public List<AuthorWithoutRelationsDTO> getAuthorsByKeyword(HttpServletRequest request,
                                                                @PathVariable String str) throws SQLException {
         int id = getLoggedUserId(request);

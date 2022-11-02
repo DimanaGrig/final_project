@@ -105,6 +105,9 @@ public class BookService extends  AbstractService {
             Book b=getBookByISBN(isbn);
             String ext= FilenameUtils.getExtension(file.getOriginalFilename());
             String name="uploads"+File.separator+"covers"+ File.separator+System.nanoTime()+"."+ext;
+            if(!validateFile(name)){
+                throw new BadRequestException("Choose propper file format!");
+            }
             File f=new File(name);
             if(!f.exists()){
                 try {
@@ -206,19 +209,20 @@ public class BookService extends  AbstractService {
         List<Book> booksToRec = new ArrayList<>();
         booksToRec.addAll(userBooks);
         if(booksToRec.isEmpty()){
-            throw new BadRequestException("Nothing to recommend for now");
+            throw new BadRequestException("Nothing to recommend for now.");
         }
         return booksToRec.stream().
                 map(b -> modelMapper.map(b, ShowBookDTO.class)).
                 collect(Collectors.toList());
     }
+
     public List<BookWithoutRelationsDTO> getBooksByKeyword(String str) throws SQLException {
         List<Book> list=bookDao.getBooksByKeyword(str);
         List<BookWithoutRelationsDTO> result= list.stream().
                 map(b -> modelMapper.map(b, BookWithoutRelationsDTO.class)).
                 collect(Collectors.toList());
         if(result.isEmpty()){
-            throw new BadRequestException("No such author!");
+            throw new BadRequestException("No such author or title!");
         }
         return result;
     }
@@ -229,7 +233,7 @@ public class BookService extends  AbstractService {
                 map(b -> modelMapper.map(b, BookWithoutRelationsDTO.class)).
                 collect(Collectors.toList());
         if(result.isEmpty()){
-            throw new BadRequestException("No such author!");
+            throw new BadRequestException("No such title!");
         }
         return result;
     }

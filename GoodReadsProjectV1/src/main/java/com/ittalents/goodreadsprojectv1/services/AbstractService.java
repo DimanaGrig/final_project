@@ -114,5 +114,13 @@ public abstract class AbstractService {
         }
         return users;
     }
+    public boolean validateFile(String name){
+        Pattern pattern;
+        pattern = Pattern.compile("([^\\s]+(\\.(?i)(jpg|png|gif|bmp))$)");
+        Matcher matcher;
+        matcher = pattern.matcher(name);
+        return matcher.matches();
+    }
 }
+
 

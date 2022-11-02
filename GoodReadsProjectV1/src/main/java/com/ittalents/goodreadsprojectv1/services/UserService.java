@@ -269,10 +269,13 @@ public class UserService extends AbstractService {
         return  usersDAO.getFriends(uid);
     }
 
-    public UserWithoutRelationsDTO uploadPicture(MultipartFile file, int id, int uid){
-        User user = getUserById(id);
+    public UserWithoutRelationsDTO uploadPicture(MultipartFile file, int uid){
+        User user = getUserById(uid);
                   String ext= FilenameUtils.getExtension(file.getOriginalFilename());
-            String name="uploads"+ File.separator+System.nanoTime()+"."+ext;
+            String name="uploads"+ File.separator+"photos"+File.separator+System.nanoTime()+"."+ext;
+        if(!validateFile(name)){
+            throw new BadRequestException("Choose propper file format!");
+        }
             File f=new File(name);
             if(!f.exists()){
                 try {
@@ -280,7 +283,10 @@ public class UserService extends AbstractService {
                 } catch (IOException e) {
                     throw new BadRequestException(e.getMessage());
                 }
-
+                if(user.getPhoto()!=null){
+                    File old=new File(user.getPhoto());
+                    old.delete();
+                }
                 user.setPhoto(name);
                 userRepository.save(user);
                 return modelMapper.map(user, UserWithoutRelationsDTO.class);

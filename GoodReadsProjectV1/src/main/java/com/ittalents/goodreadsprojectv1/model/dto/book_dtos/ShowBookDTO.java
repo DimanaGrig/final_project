@@ -1,6 +1,6 @@
 package com.ittalents.goodreadsprojectv1.model.dto.book_dtos;
 
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithNameDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import lombok.Data;
 
@@ -14,6 +14,6 @@ public class ShowBookDTO {
     private String content;
     private String bookCover;
     private String additionalInfo;
-    private AuthorWithNameDTO author;
+    private AuthorWithoutRelationsDTO author;
     private List<GenreWithoutBooksDTO> genres=new ArrayList<>();
 }
