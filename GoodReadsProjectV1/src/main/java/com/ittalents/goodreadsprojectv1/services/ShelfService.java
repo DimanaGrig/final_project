@@ -41,6 +41,9 @@ public class ShelfService extends AbstractService {
                 throw new BadRequestException("You already have shelf with that name.");
             }
         }
+        if(shelf.getName().length()>100){
+            throw  new BadRequestException("The name  of the shelf is too long");
+        }
         Shelf shelf1 = modelMapper.map(shelf, Shelf.class);
         shelf1.setUser(u);
         shelfRepository.save(shelf1);
@@ -72,6 +75,9 @@ public class ShelfService extends AbstractService {
 
     public ShelfDTO editShelf(ShelfChangeDTO dto, int uid) {
         Shelf shelf = getShelfById(dto.getId());
+        if(dto.getNewName().length()>100){
+            throw new BadRequestException("The new name of the shelf is too long");
+        }
         if (shelf.getUser().getId() == uid) {
             if (!shelf.isFromBeggining() && shelf.getName().equals(dto.getName())) {
                 if (dto.getNewName() != null) {
