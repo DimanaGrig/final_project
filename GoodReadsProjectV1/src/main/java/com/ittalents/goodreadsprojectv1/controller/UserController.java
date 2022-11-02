@@ -114,7 +114,7 @@ public class UserController extends AbstractController {
     }
 
     @GetMapping("users/friends")
-    public List<UserRespFriendDTO>  getFriends(@RequestParam int id) throws SQLException{
+    public List<UserRespFriendDTO>  getFriends(@RequestParam int id){
         return userService.getUserFriends(id);
 
     }
@@ -147,12 +147,12 @@ public class UserController extends AbstractController {
     }
 
     @GetMapping("users/total")
-    public int getTotalRate(@RequestParam int id) throws SQLException {
+    public int getTotalRate(@RequestParam int id) {
         return userService.getTotalRate(id);
     }
 
         @GetMapping("users/sum")
-        public int getSumRate(@RequestParam int id) throws SQLException {
+        public int getSumRate(@RequestParam int id)  {
             return userService.getSumRateReviews(id);
         }
     @PostMapping("/users/pic")

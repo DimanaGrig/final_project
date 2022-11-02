@@ -1,7 +1,6 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.dao.UsersDao;
-
+import com.ittalents.goodreadsprojectv1.model.dao.UserDAO;
 import com.ittalents.goodreadsprojectv1.model.dto.comments.CommentWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewWithoutRelationsDTO;
@@ -11,6 +10,7 @@ import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
+import lombok.SneakyThrows;
 import org.apache.commons.io.FilenameUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.*;
@@ -38,8 +38,9 @@ public class UserService extends AbstractService {
 
     @Autowired
     private BCryptPasswordEncoder bCryptPasswordEncoder;
+
     @Autowired
-    private UsersDao usersDAO;
+    private UserDAO userDAO;
 
     @Transactional
     public UserRespWithoutPassDTO register(UserReqRegisterDTO dto) {
@@ -248,42 +249,44 @@ public class UserService extends AbstractService {
     }
 
     public double getAvrRate(int id) throws SQLException {
-        return usersDAO.getAvrRate(id);
+        return userDAO.getAvrRate(id);
     }
 
-    public int getTotalRate(int id) throws SQLException {
-    return usersDAO.getReviewTotalRate(id);
-}
-    public int getSumRateReviews(int id)throws SQLException{
-        return usersDAO.getSumRate(id);
+    public int getTotalRate(int id)  {
+        return userDAO.getReviewTotalRate(id);
     }
 
-    public List<UserRespFriendDTO> getUserFriends(int uid) throws SQLException {
-        return  usersDAO.getFriends(uid);
+    @SneakyThrows
+    public int getSumRateReviews(int id)  {
+        return userDAO.getSumRate(id);
     }
 
-    public UserWithoutRelationsDTO uploadPicture(MultipartFile file, int uid){
+    public List<UserRespFriendDTO> getUserFriends(int uid)  {
+        return userDAO.getFriends(uid);
+    }
+
+    public UserWithoutRelationsDTO uploadPicture(MultipartFile file, int uid) {
         User user = getUserById(uid);
-                  String ext= FilenameUtils.getExtension(file.getOriginalFilename());
-            String name="uploads"+ File.separator+"photos"+File.separator+System.nanoTime()+"."+ext;
-        if(!validateFile(name)){
+        String ext = FilenameUtils.getExtension(file.getOriginalFilename());
+        String name = "uploads" + File.separator + "photos" + File.separator + System.nanoTime() + "." + ext;
+        if (!validateFile(name)) {
             throw new BadRequestException("Choose propper file format!");
         }
-            File f=new File(name);
-            if(!f.exists()){
-                try {
-                    Files.copy(file.getInputStream(), f.toPath());
-                } catch (IOException e) {
-                    throw new BadRequestException(e.getMessage());
-                }
-                if(user.getPhoto()!=null){
-                    File old=new File(user.getPhoto());
-                    old.delete();
-                }
-                user.setPhoto(name);
-                userRepository.save(user);
-                return modelMapper.map(user, UserWithoutRelationsDTO.class);
+        File f = new File(name);
+        if (!f.exists()) {
+            try {
+                Files.copy(file.getInputStream(), f.toPath());
+            } catch (IOException e) {
+                throw new BadRequestException(e.getMessage());
             }
-            throw new BadRequestException("File exists!");
+            if (user.getPhoto() != null) {
+                File old = new File(user.getPhoto());
+                old.delete();
+            }
+            user.setPhoto(name);
+            userRepository.save(user);
+            return modelMapper.map(user, UserWithoutRelationsDTO.class);
+        }
+        throw new BadRequestException("File exists!");
     }
 }
