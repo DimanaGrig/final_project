@@ -9,7 +9,8 @@ import java.util.Optional;
 public interface GenreRepository extends JpaRepository<Genre, Integer> {
 
     public Optional<Genre> findById(int id);
-    public Optional<Genre> findByName(String Name);
-
+    public Optional<Genre> findByName(String name);
+    public boolean existsByNameEqualsIgnoreCase(String str);
+    public void deleteById(int id);
 
 }

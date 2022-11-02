@@ -1,6 +1,6 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithNameDTO;
+import com.ittalents.goodreadsprojectv1.model.dao.BookDao;
 import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.*;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.*;
@@ -18,6 +18,7 @@ import javax.transaction.Transactional;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -30,80 +31,75 @@ public class BookService extends  AbstractService {
     private BookRepository bookRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private BookDao bookDao;
 
     @Transactional
     public ShowBookDTO upload(UploadBookDTO uploadDto, long id) {
-        if (id == ADMIN_ID) {
-            if (uploadDto.getAuthorId() != 0) {
-                if (validateISBN(uploadDto.getIsbn())) {
-                    if (!bookRepository.existsByIsbn(uploadDto.getIsbn())) {
-                        if (!validateName(uploadDto.getName())) {
-                            throw new BadRequestException("Invalid title!");
-                        }
-                        if ((!validateSize(uploadDto.getAdditionalInfo()))) {
-                            throw new BadRequestException("Too many characters!");
-                        }
-                        if ((!validateSize(uploadDto.getContent()))) {
-                            throw new BadRequestException("Too many characters!");
-                        }
-                        if(!validateGenres(uploadDto.getGenres())){
-                            throw new BadRequestException("Invalid input for genres");
-                        }
-                        Book book = modelMapper.map(uploadDto, Book.class);
-                        book.setAuthor(getAuthorById(uploadDto.getAuthorId()));
-                        book.setBookGenres(createListForGenres(uploadDto.getGenres()));
-                        bookRepository.save(book);
-                        ShowBookDTO result = modelMapper.map(book, ShowBookDTO.class);
-                        result.setGenres(createListForGenreDTO(uploadDto.getGenres()));
-                        return result;
-                    }
-                    throw new BadRequestException("Book has already been uploaded!");
-                }
-                throw new BadRequestException("Invalid ISBN!");
-            }
+        if (id != ADMIN_ID) {
+            throw new UnauthorizedException("You can't upload books!");
+        }
+        if (uploadDto.getAuthorId() == 0) {
             throw new BadRequestException("You have to first create the author!");
         }
-        throw new UnauthorizedException("You can't upload books!");
+        if (!validateISBN(uploadDto.getIsbn())) {
+            throw new BadRequestException("Invalid ISBN!");
+        }
+        if (bookRepository.existsByIsbn(uploadDto.getIsbn())) {
+            throw new BadRequestException("Book has already been uploaded!");
+        }
+        if (!validateName(uploadDto.getName())) {
+            throw new BadRequestException("Invalid title!");
+        }
+        if ((!validateSize(uploadDto.getAdditionalInfo()))) {
+            throw new BadRequestException("Too many characters!");
+        }
+        if ((!validateSize(uploadDto.getContent()))) {
+            throw new BadRequestException("Too many characters!");
+        }
+        if(!validateGenres(uploadDto.getGenres())){
+            throw new BadRequestException("Invalid input for genres");
+        }
+        Book book = modelMapper.map(uploadDto, Book.class);
+        book.setAuthor(getAuthorById(uploadDto.getAuthorId()));
+        book.setBookGenres(createListForGenres(uploadDto.getGenres()));
+        bookRepository.save(book);
+        ShowBookDTO result = modelMapper.map(book, ShowBookDTO.class);
+        result.setGenres(createListForGenreDTO(uploadDto.getGenres()));
+        return result;
     }
-
-
-    //                  ----------EDIT BOOK-------
 
     public ShowBookDTO editBook(EditBookDTO dto, int uid) {
         Book book = getBookByISBN(dto.getIsbn());
-        if (uid == ADMIN_ID) {
-            if (bookRepository.existsByIsbn(dto.getIsbn())) {
-                if (validateSize(dto.getAdditionalInfo())) {
-                    book.setAdditionalInfo(dto.getAdditionalInfo());
-                } else {
-                    throw new BadRequestException("Too many characters in additional information!");
-                }
-                if (validateSize(dto.getContent())) {
-                    book.setContent(dto.getContent());
-                } else {
-                    throw new BadRequestException("Too many characters in content!");
-                }
-                bookRepository.save(book);
-                return modelMapper.map(book, ShowBookDTO.class);
-            }
+        if (uid != ADMIN_ID) {
+            throw new UnauthorizedException("You can't edit this book!");
+        }
+        if (bookRepository.existsByIsbn(dto.getIsbn())) {
             throw new NotFoundException("Book does not exist!");
         }
-        throw new UnauthorizedException("You can't edit this book!");
+        if (validateSize(dto.getAdditionalInfo())) {
+            book.setAdditionalInfo(dto.getAdditionalInfo());
+        } else {
+            throw new BadRequestException("Too many characters in additional information!");
+        }
+        if (validateSize(dto.getContent())) {
+            book.setContent(dto.getContent());
+        } else {
+            throw new BadRequestException("Too many characters in content!");
+        }
+        bookRepository.save(book);
+        return modelMapper.map(book, ShowBookDTO.class);
     }
 
-
-    //              ---------------DELETE-------------
     public void deleteBook(long isbn, int uid) {
         if (uid == ADMIN_ID) {
             bookRepository.deleteByIsbn(isbn);
-            System.out.println("Book with isbn = " + isbn + " have been deleted!");
+            System.out.println("Book with isbn = " + isbn + " has been deleted!");
             return;
         }
         throw new UnauthorizedException("You can't delete books!");
     }
 
-
-    //                        ----------Cover------------
     public ShowBookDTO uploadCover(MultipartFile file, long isbn, int id){
         if(id==ADMIN_ID){
             Book b=getBookByISBN(isbn);
@@ -129,8 +125,6 @@ public class BookService extends  AbstractService {
         throw new UnauthorizedException("You can't upload pictures!");
     }
 
-
-    //                              ----------VALIDATION METHODS-----------
     public boolean validateISBN(long isbn) {
         String strNumber = String.valueOf(isbn);
         int sum = 0;
@@ -152,13 +146,15 @@ public class BookService extends  AbstractService {
     }
 
     public boolean validateGenres(List<Integer> genres){
+        if(genres.isEmpty()){
+            throw new BadRequestException("You have to select genres!");
+        }
         Set<Integer> genreSet=genres.stream().collect(Collectors.toSet());
         if(genreSet.size()!=genres.size()){
             return false;
         }
         return true;
     }
-    //                                 -------------OTHER------------------
 
     public List<Genre> createListForGenres(List<Integer> genresIds){
         List<Genre> genres=new ArrayList<>();
@@ -179,41 +175,10 @@ public class BookService extends  AbstractService {
         return genresWithoutBooks;
     }
 
-  //                                --------QUERIES----------
-
     public ShowBookDTO getByIsbn(long isbn) {
         Book book = getBookByISBN(isbn);
         ShowBookDTO dto = modelMapper.map(book, ShowBookDTO.class);
         return dto;
-    }
-
-    public List<ShowBookDTO> getBooksByTitle(String str){
-            List<Book> books = bookRepository.findByNameContainingIgnoreCase(str);
-            List<ShowBookDTO> allBooksDTO = books.stream().
-                    map(b -> modelMapper.map(b, ShowBookDTO.class)).
-                    collect(Collectors.toList());
-            return allBooksDTO;
-    }
-
-    public List<ShowBookDTO> getBooksByTitleAndAuthorKeyword(String keyword){
-        List<ShowBookDTO> allBooks=getBooksByTitle(keyword);
-        allBooks.addAll(getBooksByAuthorKeyword(keyword));
-        Set<ShowBookDTO> set=new HashSet<>();
-        set.addAll(allBooks);
-        List<ShowBookDTO> result=new ArrayList<>();
-        result.addAll(set);
-        return result;
-    }
-
-    public List<ShowBookDTO> getBooksByAuthorKeyword(String keyword){
-        List<Author> authors=getAuthorByKeyword(keyword);
-        List<Book> books=new ArrayList<>();
-        for (Author a:authors) {
-            books.addAll(a.getAllBooks());
-        }
-        return books.stream().
-        map(b -> modelMapper.map(b, ShowBookDTO.class)).
-               collect(Collectors.toList());
     }
 
     public List<ShowBookDTO> getRecommendations(int userId) {
@@ -221,7 +186,6 @@ public class BookService extends  AbstractService {
         List<Genre> favGenres = user.getLikedGenres();
         Set<Book> userBooks = new HashSet<>();
         List<Author> favAuthors = new ArrayList<>();
-        List<Book> booksForRecommendation = new ArrayList<>();
         for (Shelf s : user.getUserShelves()) {
             for (Book b : s.getBooksAtThisShelf()) {
                 userBooks.add(b);
@@ -241,8 +205,32 @@ public class BookService extends  AbstractService {
         }
         List<Book> booksToRec = new ArrayList<>();
         booksToRec.addAll(userBooks);
+        if(booksToRec.isEmpty()){
+            throw new BadRequestException("Nothing to recommend for now");
+        }
         return booksToRec.stream().
                 map(b -> modelMapper.map(b, ShowBookDTO.class)).
                 collect(Collectors.toList());
+    }
+    public List<BookWithoutRelationsDTO> getBooksByKeyword(String str) throws SQLException {
+        List<Book> list=bookDao.getBooksByKeyword(str);
+        List<BookWithoutRelationsDTO> result= list.stream().
+                map(b -> modelMapper.map(b, BookWithoutRelationsDTO.class)).
+                collect(Collectors.toList());
+        if(result.isEmpty()){
+            throw new BadRequestException("No such author!");
+        }
+        return result;
+    }
+
+    public List<BookWithoutRelationsDTO> getBooksByKeywordInTitle(String str) throws SQLException {
+        List<Book> list=bookDao.getBooksByKeywordInTitle(str);
+        List<BookWithoutRelationsDTO> result =list.stream().
+                map(b -> modelMapper.map(b, BookWithoutRelationsDTO.class)).
+                collect(Collectors.toList());
+        if(result.isEmpty()){
+            throw new BadRequestException("No such author!");
+        }
+        return result;
     }
 }

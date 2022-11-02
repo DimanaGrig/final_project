@@ -2,7 +2,6 @@ package com.ittalents.goodreadsprojectv1.model.dao;
 
 import com.ittalents.goodreadsprojectv1.model.dto.users.UserRespFriendDTO;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.relational.core.sql.SQL;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Component;
 
@@ -16,9 +15,12 @@ import java.util.List;
 @Component
 public class UsersDAO {
 
-    private static final String GET_AVR_RATE_REVIEWS = "SELECT SUM(r.rate)/COUNT(r.rate) AS AVR_rate FROM reviews r GROUP BY r.user_id =?;";
-    private static final String GET_REVIEW_TOTAL_RATE = "SELECT SUM(r.rate) AS RateSum FROM reviews r WHERE r.user_id=?;";
-    private static final String GET_SUM_REVIEWS = "SELECT COUNT(r.rate) AS reviews FROM reviews r WHERE r.user_id =?;";
+    private static final String GET_AVR_RATE_REVIEWS = "SELECT SUM(r.rate)/COUNT(r.rate)" +
+            " AS AVR_rate FROM reviews r GROUP BY r.user_id =?;";
+    private static final String GET_REVIEW_TOTAL_RATE = "SELECT SUM(r.rate) AS RateSum " +
+            "FROM reviews r WHERE r.user_id=?;";
+    private static final String GET_SUM_REVIEWS = "SELECT COUNT(r.rate) AS reviews" +
+            " FROM reviews r WHERE r.user_id =?;";
     private static final String GET_FRIENDS = "SELECT l.user_id,u.first_name,u.last_name,u.addres,\n" +
             "r.id AS review_id,r.rate,r.opinion ,b.ISBN,b.name,a.id,\n" +
             "a.first_name AS author_first_name,a.last_name AS author_last_name,\n" +
@@ -94,7 +96,7 @@ public class UsersDAO {
                 friendDTO.getHighestRateReview().setId(resultSet.getInt("review_id"));
                 friendDTO.getHighestRateReview().setRate(resultSet.getInt("rate"));
                 friendDTO.getHighestRateReview().setOpinion(resultSet.getString("opinion"));
-                friendDTO.getHighestRateReview().getBook().setId(Long.parseLong(String.valueOf(resultSet.getLong("ISBN"))));
+                friendDTO.getHighestRateReview().getBook().setIsbn(Long.parseLong(String.valueOf(resultSet.getLong("ISBN"))));
                 friendDTO.getHighestRateReview().getBook().setName(resultSet.getString("name"));
                 friendDTO.getHighestRateReview().getBook().getAuthor().setId(resultSet.getInt("id"));
                 friendDTO.getHighestRateReview().getBook().getAuthor().setFirstName(resultSet.getString("author_first_name"));

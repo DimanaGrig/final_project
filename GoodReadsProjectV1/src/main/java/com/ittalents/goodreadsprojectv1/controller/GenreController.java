@@ -1,5 +1,6 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
+import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreNameDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreUsersDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.services.GenreService;
@@ -33,4 +34,17 @@ public class GenreController extends AbstractController {
         checkLog(id);
         return genreService.like(gid, id);
     }
+    @PostMapping("/genres")
+    public GenreWithoutBooksDTO createGenre(@RequestBody GenreNameDTO dto, HttpServletRequest request){
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        return genreService.createGenre(id, dto);
+    }
+    @DeleteMapping("/genres/{id}")
+    public void deleteGenre(HttpServletRequest request, @PathVariable int id) {
+        int uid = getLoggedUserId(request);
+        checkLog(uid);
+        genreService.deleteGenre(id, uid);
+    }
+
 }

@@ -60,7 +60,7 @@ public class ReviewService extends AbstractService {
         Review review = getReviewById(rid);
         if (review.getUser().getId() == id) {
             reviewRepository.deleteById(rid);
-            System.out.println("Review with id " + id + "have been deleted.");
+            System.out.println("Review with id " + id + "has been deleted.");
         } else {
             throw new UnauthorizedException("You can't delete this review!");
         }

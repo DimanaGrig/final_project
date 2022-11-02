@@ -137,7 +137,7 @@ public class UserService extends AbstractService {
 
     public void delete(int id) {
         userRepository.deleteById(id);
-        System.out.println("the user with id = " + id + " have been deleted!");
+        System.out.println("the user with id = " + id + " has been deleted!");
     }
 
 

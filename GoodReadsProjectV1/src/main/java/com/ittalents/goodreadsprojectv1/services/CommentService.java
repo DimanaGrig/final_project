@@ -33,7 +33,7 @@ public class CommentService extends AbstractService {
         Comment comment  = getCommentById(cid);
         if (comment.getUser().getId() == id) {
             commentRepository.deleteById(cid);
-            System.out.println("Comment with id " + id + "have been deleted.");
+            System.out.println("Comment with id " + id + "has been deleted.");
         } else {
             throw new UnauthorizedException("You can't delete this review!");
         }
@@ -57,6 +57,5 @@ public class CommentService extends AbstractService {
         dto.setCommentReview(modelMapper.map(comment.getCommentReview(), ReviewWithoutRelationsDTO.class));
         return dto;
     }
-
 
 }

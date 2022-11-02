@@ -53,7 +53,7 @@ public class ShelfService extends AbstractService {
         Shelf shelf = getShelfById(sid);
         if (shelf.getUser().getId() == id && !shelf.isFromBeggining()) {
             shelfRepository.deleteById(sid);
-            System.out.println("sheld with id " + id + "have been deleted.");
+            System.out.println("sheld with id " + id + "has been deleted.");
         } else {
             throw new UnauthorizedException("You can't delete this shelf!");
         }

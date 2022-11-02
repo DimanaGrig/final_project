@@ -1,6 +1,5 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithNameDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.*;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
@@ -8,14 +7,9 @@ import com.ittalents.goodreadsprojectv1.model.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
 
-
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.util.stream.Collectors;
 
 public abstract class AbstractService {
     @Autowired
@@ -97,7 +91,7 @@ public abstract class AbstractService {
     }
 
     protected boolean validateLength(int length) {
-        if (length <= 30) {
+        if (length <= 40) {
             return true;
         }
         return false;
@@ -119,16 +113,6 @@ public abstract class AbstractService {
             throw new NotFoundException("We don't have users with that name");
         }
         return users;
-    }
-
-    public List<Author> getAuthorByKeyword(String keyword) {
-        List<Author> authors = authorRepository.findByFirstNameContainingIgnoreCase(keyword);
-        authors.addAll(authorRepository.findByLastNameContainingIgnoreCase(keyword));
-        Set<Author> set =new HashSet<>();
-        set.addAll(authors);
-        List<Author> result=new ArrayList<>();
-        result.addAll(set);
-        return result;
     }
 }
 

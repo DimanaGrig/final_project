@@ -1,14 +1,10 @@
 package com.ittalents.goodreadsprojectv1.services;
 
-import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithNameDTO;
+import com.ittalents.goodreadsprojectv1.model.dao.AuthorDao;
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutBooksDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.EditAuthorDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.ShowBookDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
-import com.ittalents.goodreadsprojectv1.model.dto.users.UserWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.Author;
-import com.ittalents.goodreadsprojectv1.model.entity.Genre;
-import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import com.ittalents.goodreadsprojectv1.model.repository.AuthorRepository;
@@ -24,11 +20,8 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.sql.SQLException;
 import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 
 @Service
@@ -37,6 +30,8 @@ public class AuthorService extends AbstractService {
     private AuthorRepository authorRepository;
     @Autowired
     private ModelMapper modelMapper;
+    @Autowired
+    private AuthorDao authorDao;
 
     public AuthorWithoutBooksDTO editAuthor(EditAuthorDTO editDTO, int uid/*, int id*/){
         if(uid==ADMIN_ID) {
@@ -120,17 +115,15 @@ public class AuthorService extends AbstractService {
         }
         return true;
     }
-    public List<AuthorWithNameDTO> getByKeyword(String keyword){ //raboti
-        List<Author> authors=getAuthorByKeyword(keyword);
-        List<AuthorWithNameDTO> allAuthorsDTO = authors.stream().
-                map(a -> modelMapper.map(a, AuthorWithNameDTO.class)).
-                collect(Collectors.toList());
-        if(allAuthorsDTO.isEmpty()){
-            throw new BadRequestException("No such author!");
-        }
-        return  allAuthorsDTO;
-    }
+
     public AuthorWithoutBooksDTO getById(int aid){
         return modelMapper.map(authorRepository.findAuthorById(aid), AuthorWithoutBooksDTO.class);
+    }
+    public List<AuthorWithoutRelationsDTO> getAuthorsByKeyword(String str) throws SQLException {
+        List<AuthorWithoutRelationsDTO> result=authorDao.getAuthorsByKeyword(str);
+        if(result.isEmpty()){
+            throw new BadRequestException("No such author!");
+        }
+        return result;
     }
 }
