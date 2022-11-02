@@ -55,27 +55,27 @@ public class BookController extends AbstractController {
         return bookService.uploadCover(file, isbn, id);
     }
 
-    @GetMapping("/books/search/{str}")
-    public List<ShowBookDTO> getBooksByTitle(HttpServletRequest request, @PathVariable String str) {
-        int id = getLoggedUserId(request);
-        checkLog(id);
-        List<ShowBookDTO> allBooksDto = bookService.getBooksByTitle(str);
-        return allBooksDto;
-    }
-
-    @GetMapping("/books/find/{str}")
-    public List<ShowBookDTO> getBooksByTitleAndAuthorKeyword(HttpServletRequest request, @PathVariable String str) {
-        int id = getLoggedUserId(request);
-        checkLog(id);
-        List<ShowBookDTO> allBooksDto = bookService.getBooksByTitleAndAuthorKeyword(str);
-        return allBooksDto;
-    }
-
-    @GetMapping("books/recommended")      //todo ne e testvano
+    @GetMapping("books/recommended")
     public List<ShowBookDTO> getRecommendations( HttpServletRequest request){
         int id = getLoggedUserId(request);
         checkLog(id);
         List<ShowBookDTO> allBooksDto = bookService.getRecommendations(id);
+        return allBooksDto;
+    }
+    @GetMapping("/books/key/{str}")
+    public List<BookWithoutRelationsDTO> getBooksByKeyword(@PathVariable String str,
+                                                            HttpServletRequest request) throws SQLException {
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        List<BookWithoutRelationsDTO> allBooksDto = bookService.getBooksByKeyword(str);
+        return allBooksDto;
+    }
+    @GetMapping("/books/key-title/{str}")
+    public List<BookWithoutRelationsDTO> getBooksByKeywordInTitle(@PathVariable String str,
+                                                            HttpServletRequest request) throws SQLException {
+        int id = getLoggedUserId(request);
+        checkLog(id);
+        List<BookWithoutRelationsDTO> allBooksDto = bookService.getBooksByKeywordInTitle(str);
         return allBooksDto;
     }
 

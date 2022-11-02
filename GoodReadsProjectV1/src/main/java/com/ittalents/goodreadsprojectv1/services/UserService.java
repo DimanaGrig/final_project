@@ -205,9 +205,7 @@ public class UserService extends AbstractService {
     public UserShelvesDTO findAllUserShelves(int uid) {
         User u = getUserById(uid);
         UserShelvesDTO dto = modelMapper.map(u, UserShelvesDTO.class);
-        dto.setUserShelves(u.getUserShelves().stream().map(sh -> modelMapper.map(sh, ShelfWithoutRelationsDTO.class)).collect(Collectors.toList()));
-
-
+        dto.setUserShelves(u.getUserShelves().stream().map((sh -> modelMapper.map(sh, ShelfWithoutRelationsDTO.class))).collect(Collectors.toList()));
         return dto;
     }
 
@@ -254,32 +252,38 @@ public class UserService extends AbstractService {
     }
 
     public int getTotalRate(int id) throws SQLException {
-        return usersDAO.getReviewTotalRate(id);
-    }
-
-    public int getSumRateReviews(int id) throws SQLException {
+    return usersDAO.getReviewTotalRate(id);
+}
+    public int getSumRateReviews(int id)throws SQLException{
         return usersDAO.getSumRate(id);
     }
 
     public List<UserRespFriendDTO> getUserFriends(int uid) throws SQLException {
-        return usersDAO.getFriends(uid);
+        return  usersDAO.getFriends(uid);
     }
 
-    public UserWithoutRelationsDTO uploadPicture(MultipartFile file, int id, int uid) {
-        User user = getUserById(id);
-        String ext = FilenameUtils.getExtension(file.getOriginalFilename());
-        String name = "uploads" + File.separator + System.nanoTime() + "." + ext;
-        File f = new File(name);
-        if (!f.exists()) {
-            try {
-                Files.copy(file.getInputStream(), f.toPath());
-            } catch (IOException e) {
-                throw new BadRequestException(e.getMessage());
-            }
-            user.setPhoto(name);
-            userRepository.save(user);
-            return modelMapper.map(user, UserWithoutRelationsDTO.class);
+    public UserWithoutRelationsDTO uploadPicture(MultipartFile file, int uid){
+        User user = getUserById(uid);
+                  String ext= FilenameUtils.getExtension(file.getOriginalFilename());
+            String name="uploads"+ File.separator+"photos"+File.separator+System.nanoTime()+"."+ext;
+        if(!validateFile(name)){
+            throw new BadRequestException("Choose propper file format!");
         }
-        throw new BadRequestException("File exists!");
+            File f=new File(name);
+            if(!f.exists()){
+                try {
+                    Files.copy(file.getInputStream(), f.toPath());
+                } catch (IOException e) {
+                    throw new BadRequestException(e.getMessage());
+                }
+                if(user.getPhoto()!=null){
+                    File old=new File(user.getPhoto());
+                    old.delete();
+                }
+                user.setPhoto(name);
+                userRepository.save(user);
+                return modelMapper.map(user, UserWithoutRelationsDTO.class);
+            }
+            throw new BadRequestException("File exists!");
     }
 }

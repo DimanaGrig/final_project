@@ -33,7 +33,7 @@ public class AuthorService extends AbstractService {
     @Autowired
     private AuthorDao authorDao;
 
-    public AuthorWithoutBooksDTO editAuthor(EditAuthorDTO editDTO, int uid/*, int id*/){
+    public AuthorWithoutBooksDTO editAuthor(EditAuthorDTO editDTO, int uid){
         if(uid==ADMIN_ID) {
             Author author= findAuthorById(editDTO.getId());
             if(validateSize(editDTO.getInformationForAuthor())){
@@ -58,6 +58,9 @@ public class AuthorService extends AbstractService {
             Author a=findAuthorById(id);
             String ext= FilenameUtils.getExtension(file.getOriginalFilename());
             String name="uploads"+File.separator+"pictures"+File.separator+System.nanoTime()+"."+ext;
+            if(!validateFile(name)){
+                throw new BadRequestException("Choose propper file format!");
+            }
             File f=new File(name);
             if(!f.exists()){
                 try {
@@ -101,7 +104,7 @@ public class AuthorService extends AbstractService {
     public void deleteAuthor(int aid, int uid) {
         if(uid==ADMIN_ID){
             authorRepository.deleteById(aid);
-            System.out.println("Author with id = " + aid + " have been deleted!");
+            System.out.println("Author with id = " + aid + " has been deleted!");
             return;
         }
         throw new UnauthorizedException("You can't delete books!");
