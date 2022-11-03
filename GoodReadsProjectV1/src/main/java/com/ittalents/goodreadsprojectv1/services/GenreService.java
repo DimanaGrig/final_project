@@ -1,7 +1,9 @@
 package com.ittalents.goodreadsprojectv1.services;
 
+import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookWithoutGenresDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreNameDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreUsersDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.users.UserWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.Genre;
@@ -25,9 +27,10 @@ public class GenreService extends AbstractService {
         return allGenresDTO;
     }
 
-    public GenreWithoutBooksDTO getById(int id) {
-        Genre genre = genreRepository.findById(id).orElseThrow(() -> new NotFoundException("Genre not found!"));
-        GenreWithoutBooksDTO dto = modelMapper.map(genre, GenreWithoutBooksDTO.class);
+    public GenreWithBooksDTO getById(int id) {
+        Genre genre = getGenreById(id);
+        GenreWithBooksDTO dto = modelMapper.map(genre, GenreWithBooksDTO.class);
+        dto.setBooksInGenre(genre.getBooksInGenre().stream().map(b -> modelMapper.map(b, BookWithoutGenresDTO.class)).collect(Collectors.toList()));
         return dto;
     }
 
@@ -44,18 +47,19 @@ public class GenreService extends AbstractService {
         response.setUserLikedGenre(genre.getUserLikedGenre().stream().map(u -> modelMapper.map(u, UserWithoutRelationsDTO.class)).collect(Collectors.toList()));
         return response;
     }
-    public GenreWithoutBooksDTO createGenre(int uid, GenreNameDTO dto){
-        if(uid!=ADMIN_ID){
+
+    public GenreWithoutBooksDTO createGenre(int uid, GenreNameDTO dto) {
+        if (uid != ADMIN_ID) {
             throw new UnauthorizedException("You can't add genres!");
         }
-        String dtoName= dto.getName();
-        if(genreRepository.existsByNameEqualsIgnoreCase(dtoName)){
+        String dtoName = dto.getName();
+        if (genreRepository.existsByNameEqualsIgnoreCase(dtoName)) {
             throw new BadRequestException("Genre with this name already exists!");
         }
-        if(!validateName(dto.getName())){
+        if (!validateName(dto.getName())) {
             throw new BadRequestException("Invalid input for name!");
         }
-        Genre newGenre=modelMapper.map(dto, Genre.class);
+        Genre newGenre = modelMapper.map(dto, Genre.class);
         genreRepository.save(newGenre);
         return modelMapper.map(newGenre, GenreWithoutBooksDTO.class);
     }

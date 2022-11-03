@@ -2,6 +2,7 @@ package com.ittalents.goodreadsprojectv1.controller;
 
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreNameDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreUsersDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.services.GenreService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,7 +25,7 @@ public class GenreController extends AbstractController {
     }
 
     @GetMapping("/genres/{id}")
-    public GenreWithoutBooksDTO getById(@PathVariable int id) {
+    public GenreWithBooksDTO getById(@PathVariable int id) {
         return genreService.getById(id);
     }
 
