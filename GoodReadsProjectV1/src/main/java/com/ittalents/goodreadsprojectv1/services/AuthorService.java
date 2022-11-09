@@ -103,6 +103,7 @@ public class AuthorService extends AbstractService {
 
     public void deleteAuthor(int aid, int uid) {
         if(uid==ADMIN_ID){
+            findAuthorById(aid);
             authorRepository.deleteById(aid);
             System.out.println("Author with id = " + aid + " has been deleted!");
             return;

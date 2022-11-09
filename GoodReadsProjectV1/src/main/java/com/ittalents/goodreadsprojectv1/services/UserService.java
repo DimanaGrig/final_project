@@ -2,11 +2,16 @@ package com.ittalents.goodreadsprojectv1.services;
 
 import com.ittalents.goodreadsprojectv1.model.EmailDTO.EmailDTO;
 import com.ittalents.goodreadsprojectv1.model.dao.UserDAO;
+import com.ittalents.goodreadsprojectv1.model.dto.author_dtos.AuthorWithoutRelationsDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookFriendDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookHelpDTO;
+import com.ittalents.goodreadsprojectv1.model.dto.book_dtos.BookHomePageDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.comments.CommentWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.reviews.ReviewWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.shelves.ShelfWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.users.*;
+import com.ittalents.goodreadsprojectv1.model.entity.Review;
 import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
@@ -18,6 +23,7 @@ import org.springframework.data.domain.*;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 
@@ -47,7 +53,7 @@ public class UserService extends AbstractService {
     public UserRespWithoutPassDTO register(UserReqRegisterDTO dto) {
         String email = dto.getEmail();
         String pass = dto.getPass();
-        if (!((validateEmail(email)) || checkForEmailInDB(email) || validatePass(pass))) {
+        if (!(validateEmail(email)) || !(checkForEmailInDB(email)) || !(validatePass(pass))) {
             throw new BadRequestException("Not good Credentials!");
         }
         if (!dto.getPass().equals(dto.getConfirmPass())) {
@@ -56,7 +62,7 @@ public class UserService extends AbstractService {
         if (!validateSize(dto.getInfoForUser())) {
             throw new BadRequestException("Too many characters!");
         }
-        if (!(validateLength(dto.getFirstName().length()) || validateLength(dto.getLastName().length()))) {
+        if (!(validateLength(dto.getFirstName().length())) || !(validateLength(dto.getLastName().length()))) {
             throw new BadRequestException("Too many characters!");
         }
         User u = modelMapper.map(dto, User.class);
@@ -85,12 +91,14 @@ public class UserService extends AbstractService {
         }
         return true;
     }
+
     private boolean checkForEmailInDB(String email) {
         if (userRepository.findAllByEmail(email).size() > 0) {
             return false;
         }
         return true;
     }
+
     private boolean validatePass(String pass) {
         String regex = "^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])(?=.*[!@#&()–[{}]:;',?/*~$^+=<>]).{8,20}$";
         Pattern pattern = Pattern.compile(regex);
@@ -100,10 +108,11 @@ public class UserService extends AbstractService {
         }
         return true;
     }
+
     public UserWithoutRelationsDTO login(UserReqLoginDTO dto) {
         String email = dto.getEmail();
         String pass = dto.getPass();
-        if (!validateEmail(email) || !validatePass(pass)) {
+        if (!(validateEmail(email)) || !(validatePass(pass))) {
             throw new BadRequestException("Wrong Credentials");
         }
         Optional<User> user = userRepository.findByEmail(email);
@@ -117,11 +126,13 @@ public class UserService extends AbstractService {
         }
         throw new UnauthorizedException("Wrong Credentials!");
     }
+
     public UserRespWithoutPassDTO getById(int uid) {
         User u = getUserById(uid);
         UserRespWithoutPassDTO dto = modelMapper.map(u, UserRespWithoutPassDTO.class);
         return dto;
     }
+
     public List<UserWithoutRelationsDTO> findAll() {
         List<User> users = userRepository.findAll();
         if (users.size() == 0) {
@@ -129,10 +140,12 @@ public class UserService extends AbstractService {
         }
         return users.stream().map(u -> modelMapper.map(u, UserWithoutRelationsDTO.class)).collect(Collectors.toList());
     }
+
     public void delete(int id) {
         userRepository.deleteById(id);
         System.out.println("the user with id = " + id + " has been deleted!");
     }
+
     public UserFollowingDTO followUser(int fid, int id) {
         User following = getUserById(fid);
         User follower = getUserById(id);
@@ -146,6 +159,7 @@ public class UserService extends AbstractService {
         u.setFollowing(follower.getFollowing().stream().map(f -> modelMapper.map(f, UserWithoutRelationsDTO.class)).collect(Collectors.toList()));
         return u;
     }
+
     public UserRespWithoutPassDTO changePass(UserReqChangePassDTO dto, int id) {
         String newPass = dto.getNewPassword();
         String confirmNewPass = dto.getConfirmNewPassword();
@@ -163,8 +177,8 @@ public class UserService extends AbstractService {
 
     public UserRespWithoutPassDTO editProfile(UserEditProfile dto, int id) {
         User user = getUserById(id);
-        if (dto.getFirstName() != null && dto.getLastName()!=null &&
-                dto.getGender()!=null  && dto.getAddress()!=null ) {
+        if (dto.getFirstName() != null && dto.getLastName() != null &&
+                dto.getGender() != null && dto.getAddress() != null) {
             checkForLength(dto.getFirstName());
             checkForLength(dto.getLastName());
             checkForLength(dto.getGender());
@@ -173,7 +187,7 @@ public class UserService extends AbstractService {
             user.setLastName(dto.getLastName());
             user.setGender(dto.getGender());
             user.setAddress(dto.getAddress());
-        }else{
+        } else {
             throw new BadRequestException("You doesn't fill the requierd data.");
         }
         String website = dto.getWebsite();
@@ -278,5 +292,17 @@ public class UserService extends AbstractService {
             return modelMapper.map(user, UserWithoutRelationsDTO.class);
         }
         throw new BadRequestException("File exists!");
+    }
+    public List<UserFriendDTO> getFriends(int uid) {
+        List<UserHelpDTO> friends = userDAO.getUserFriends(uid);
+        List<UserFriendDTO> friendsDto = friends.stream().map(f -> modelMapper.map(f, UserFriendDTO.class)).collect(Collectors.toList());
+        for (int i = 0; i < friends.size(); i++) {
+            if (friends.get(i).getReview() != null) {
+                friendsDto.get(i).setReview(modelMapper.map(friends.get(i).getReview(), ReviewWithoutRelationsDTO.class));
+                friendsDto.get(i).setBook(modelMapper.map(friends.get(i).getBook(), BookFriendDTO.class));
+                friendsDto.get(i).setAuthor(modelMapper.map(friends.get(i).getAuthor(), AuthorWithoutRelationsDTO.class));
+            }
+        }
+        return friendsDto;
     }
 }

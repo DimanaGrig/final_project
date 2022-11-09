@@ -3,6 +3,7 @@ package com.ittalents.goodreadsprojectv1.controller;
 
 
 import com.ittalents.goodreadsprojectv1.model.dto.users.*;
+import com.ittalents.goodreadsprojectv1.model.entity.User;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.UnauthorizedException;
 import com.ittalents.goodreadsprojectv1.services.UserService;
@@ -146,6 +147,10 @@ public class UserController extends AbstractController {
         checkLog(uid);
         return userService.uploadPicture(file, uid);
     }
-}
+    @GetMapping("users/friends")
+    public List<UserFriendDTO>  getUserFriends(@RequestParam int uid){
+        return userService.getFriends(uid);
+    }
+   }
 
 

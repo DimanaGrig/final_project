@@ -118,7 +118,7 @@ public class BookDao {
                 book.setAuthor(a);
                 a.setId(resultSet.getInt("author_id"));
                 a.setFirstName(resultSet.getString("first_name"));
-                a.setLastName("last_name");
+                a.setLastName(resultSet.getString("last_name"));
                 books.add(book);
             }
             resultSet.close();
