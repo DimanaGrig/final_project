@@ -1,5 +1,6 @@
 package com.ittalents.goodreadsprojectv1.services;
 
+import com.ittalents.goodreadsprojectv1.model.EmailDTO.EmailDTO;
 import com.ittalents.goodreadsprojectv1.model.dao.UserDAO;
 import com.ittalents.goodreadsprojectv1.model.dto.comments.CommentWithoutRelationsDTO;
 import com.ittalents.goodreadsprojectv1.model.dto.genre_dtos.GenreWithoutBooksDTO;
@@ -66,6 +67,11 @@ public class UserService extends AbstractService {
         shelfService.createBasicShelves(u);
         UserRespWithoutPassDTO dto1 = modelMapper.map(u, UserRespWithoutPassDTO.class);
         dto1.setUserShelves(u.getUserShelves().stream().map(sh -> modelMapper.map(sh, ShelfWithoutRelationsDTO.class)).collect(Collectors.toList()));
+        EmailDTO emailDto=new EmailDTO();
+        emailDto.setTo(u.getEmail());
+        emailDto.setSubject(REGISTRATION_SUBJECT);
+        emailDto.setMessage(u.getFirstName()+" "+u.getLastName()+REGISTRATION_MESSAGE);
+        sendSimpleMessage(emailDto);
         return dto1;
     }
 
@@ -254,7 +260,7 @@ public class UserService extends AbstractService {
         String ext = FilenameUtils.getExtension(file.getOriginalFilename());
         String name = "uploads" + File.separator + "photos" + File.separator + System.nanoTime() + "." + ext;
         if (!validateFile(name)) {
-            throw new BadRequestException("Choose propper file format!");
+            throw new BadRequestException("Choose proper file format!");
         }
         File f = new File(name);
         if (!f.exists()) {

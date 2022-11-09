@@ -1,11 +1,14 @@
 package com.ittalents.goodreadsprojectv1.services;
 
+import com.ittalents.goodreadsprojectv1.model.EmailDTO.EmailDTO;
 import com.ittalents.goodreadsprojectv1.model.entity.*;
 import com.ittalents.goodreadsprojectv1.model.exceptions.BadRequestException;
 import com.ittalents.goodreadsprojectv1.model.exceptions.NotFoundException;
 import com.ittalents.goodreadsprojectv1.model.repository.*;
 import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.mail.SimpleMailMessage;
+import org.springframework.mail.javamail.JavaMailSender;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -28,9 +31,13 @@ public abstract class AbstractService {
     protected AuthorRepository authorRepository;
     @Autowired
     protected ModelMapper modelMapper;
+    @Autowired
+    private JavaMailSender emailSender;
+
 
     public static final double ADMIN_ID = 1;
-
+    public static final String REGISTRATION_SUBJECT="Successful registration in Goodreads!";
+    public static final String REGISTRATION_MESSAGE=",\n\n Welcome to Goodreads!";
 
     protected User getUserById(int uid) {
         return userRepository.findById(uid).orElseThrow(() -> new NotFoundException("User not found!"));
@@ -132,6 +139,14 @@ public abstract class AbstractService {
         if (rate > 5 || rate < 1) {
             throw new BadRequestException("Wrong credential.");
         }
+    }
+    public void sendSimpleMessage(EmailDTO dto) {
+            SimpleMailMessage message = new SimpleMailMessage();
+            message.setFrom("ittalentsfinalpr@gmail.com");
+            message.setTo(dto.getTo());
+            message.setSubject(dto.getSubject());
+            message.setText(dto.getMessage());
+            emailSender.send(message);
     }
 }
 

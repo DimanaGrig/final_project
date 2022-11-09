@@ -1,7 +1,7 @@
 package com.ittalents.goodreadsprojectv1.controller;
 
 import com.ittalents.goodreadsprojectv1.model.EmailDTO.EmailDTO;
-import com.ittalents.goodreadsprojectv1.services.EmailService;
+import com.ittalents.goodreadsprojectv1.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -11,15 +11,11 @@ import javax.servlet.http.HttpServletRequest;
 
 @RestController
 public class EmailController extends AbstractController {
-
     @Autowired
-    private EmailService еmailService;
-
+    private UserService userService;
     @PostMapping("/send")
     public void sendMail(@RequestBody EmailDTO dto, HttpServletRequest request) {
-        int id = getLoggedUserId(request);
-        checkLog(id);
-        еmailService.sendSimpleMessage(dto);
+        userService.sendSimpleMessage(dto);
         return;
     }
 }
